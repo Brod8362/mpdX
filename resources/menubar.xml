@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-    <menu id="appmenu">
-
-        <section>
+    <menu id="menubar">
+        <submenu>
             <attribute name="label">Application</attribute>
             <item>
                 <attribute name="label">_Preferences</attribute>
                 <attribute name="action">app.prefs</attribute>
+                <attribute name="accel">&lt;Primary&gt;l</attribute>
             </item>
             <item>
                 <attribute name="label">_Minimize</attribute>
@@ -15,10 +15,11 @@
             <item>
                 <attribute name="label">_Quit</attribute>
                 <attribute name="action">app.quit</attribute>
+                <attribute name="accel">&lt;Primary&gt;q</attribute>
             </item>
-        </section>
+        </submenu>
 
-        <section>
+        <submenu>
             <attribute name="label">Playback</attribute>
             <item>
                 <attribute name="label">_Play</attribute>
@@ -32,6 +33,6 @@
                 <attribute name="label">_Stop</attribute>
                 <attribute name="action">app.stop</attribute>
             </item>
-        </section>
+        </submenu>
 
     </menu>

@@ -7,7 +7,7 @@ static void initialize_menu_bar(GtkApplication* app) {
 	GResource* resources;
 
 	builder = gtk_builder_new_from_resource("/byakuren/resources/menubar.xml");
-	app_menu = G_MENU_MODEL(gtk_builder_get_object(builder, "appmenu"));
+	app_menu = G_MENU_MODEL(gtk_builder_get_object(builder, "menubar"));
 	gtk_application_set_app_menu(app, app_menu);
 	g_object_unref(builder); //free memory used by builder
 }
