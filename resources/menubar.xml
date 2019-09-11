@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <menu id=appmenu>
+        <section>
+            <item>
+                <attribute name="label">_Preferences</attribute>
+                <attribute name="action">app.prefs</attribute>
+            </item>
+            <item>
+                <attribute name="label">_Minimize</attribute>
+                <attribute name="action">app.minimize</attribute>
+            </item>
+            <item>
+                <attribute name="label">_Quit</attribute>
+                <attribute name="action">app.quit</attribute>
+            </item>
+        </section>
+    </menu>
