@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-    <menu id=appmenu>
+    <menu id="appmenu">
+
         <section>
+            <attribute name="label">Application</attribute>
             <item>
                 <attribute name="label">_Preferences</attribute>
                 <attribute name="action">app.prefs</attribute>
@@ -15,4 +17,21 @@
                 <attribute name="action">app.quit</attribute>
             </item>
         </section>
+
+        <section>
+            <attribute name="label">Playback</attribute>
+            <item>
+                <attribute name="label">_Play</attribute>
+                <attribute name="action">app.play</attribute>
+            </item>
+            <item>
+                <attribute name="label">_Pause</attribute>
+                <attribute name="action">app.pause</attribute>
+            </item>
+            <item>
+                <attribute name="label">_Stop</attribute>
+                <attribute name="action">app.stop</attribute>
+            </item>
+        </section>
+
     </menu>
