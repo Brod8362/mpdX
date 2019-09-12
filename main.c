@@ -43,14 +43,19 @@ static void init_grid(GtkWindow* window) {
 	GtkWidget* next_button;
 	GtkWidget* stop_button;
 	GtkWidget* vol_bar;
+	GtkWidget* vol_icon;
+
 	GtkAdjustment* adjust;
 
 	grid = GTK_GRID(gtk_grid_new());
-
+	
 	toggle_button = gtk_button_new_from_icon_name("media-playback-start", GTK_ICON_SIZE_BUTTON);
 	prev_button = gtk_button_new_from_icon_name("media-skip-backward", GTK_ICON_SIZE_BUTTON);
 	next_button = gtk_button_new_from_icon_name("media-skip-forward", GTK_ICON_SIZE_BUTTON);
 	stop_button = gtk_button_new_from_icon_name("media-playback-stop", GTK_ICON_SIZE_BUTTON);
+
+	
+	vol_icon = gtk_image_new_from_icon_name("audio-volume-medium", GTK_ICON_SIZE_BUTTON);
 
 	adjust = gtk_adjustment_new(0, 0, 100, 1, 0, 0);
 	vol_bar = gtk_scale_new(GTK_ORIENTATION_HORIZONTAL,adjust);
@@ -59,8 +64,9 @@ static void init_grid(GtkWindow* window) {
 	for (int i = 0; i <= 100; i+=25) {
 		gtk_scale_add_mark(GTK_SCALE(vol_bar), i, GTK_BASELINE_POSITION_CENTER, NULL);
 	}
-
-	gtk_grid_attach(grid, vol_bar, 0, 1, 5, 1);
+	
+	gtk_grid_attach(grid, vol_icon, 0, 1, 1, 1);
+	gtk_grid_attach(grid, vol_bar, 1, 1, 4, 1);
 	gtk_grid_attach(grid, prev_button, 0, 5, 1, 1);
 	gtk_grid_attach(grid, toggle_button, 1, 5, 2, 1);
 	gtk_grid_attach(grid, stop_button, 3, 5, 1, 1);
