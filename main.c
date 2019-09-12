@@ -1,5 +1,17 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+#include <argp.h>
+
+static bool debug = false;
+
+static void debug_log(char* str) {
+	if (debug) {
+		printf("%s\n", str);
+	}
+}
 
 static void initialize_menu_bar(GtkApplication* app) {
 	GtkBuilder* builder;
@@ -14,7 +26,7 @@ static void initialize_menu_bar(GtkApplication* app) {
 
 static void activate(GtkApplication* app, gpointer data) {
 	GtkWidget* window;
-	printf("Initializing mpdX\n");
+	debug_log("Initializing mpdX");
 
 	/* init base window */	
 	window = gtk_application_window_new(app);
@@ -28,7 +40,14 @@ static void activate(GtkApplication* app, gpointer data) {
 }
 
 int main(int argc, char *argv[]) {
-
+	int opt;
+	while ((opt= getopt(argc, argv, ":if:lrx")) != -1) {
+		switch (opt) {
+			case 'd':
+				debug=true;
+				debug_log("running in debug mode");
+		}	
+	}
 	GtkApplication* app;
 	int status;
 	app = gtk_application_new("pw.byakuren.mpdX", G_APPLICATION_FLAGS_NONE);
