@@ -38,6 +38,16 @@
                 <attribute name="action">app.toggle</attribute>
                 <attribute name="accel">t</attribute>
             </item>
+            <item>
+                <attribute name="label">_Volume Up</attribute>
+                <attribute name="action">app.volup</attribute>
+                <attribute name="accel">equal</attribute>
+            </item>
+            <item>
+                <attribute name="label">_Volume Down</attribute>
+                <attribute name="action">app.voldown</attribute>
+                <attribute name="accel">minus</attribute>
+            </item>
         </submenu>
 
     </menu>

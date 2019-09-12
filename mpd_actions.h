@@ -10,6 +10,8 @@ GSimpleAction* mpd_playback_toggle;
 GSimpleAction* mpd_stop_action;
 GSimpleAction* mpd_next_action;
 GSimpleAction* mpd_prev_action;
+GSimpleAction* mpd_vol_up_action;
+GSimpleAction* mpd_vol_down_action;
 
 void mpd_play(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
 
@@ -18,6 +20,12 @@ void mpd_pause(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
 void mpd_stop(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
 
 void mpd_toggle(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
+
+void mpd_vol_up(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
+
+void mpd_vol_down(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
+
+void mpd_vol_mute(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
 
 void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd);
 
