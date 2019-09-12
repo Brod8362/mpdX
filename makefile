@@ -12,6 +12,7 @@ resources.c: resources/window.xml
 
 clean:
 	rm -rf .tmp
-	rm -f main mpd_actions.o
+	rm -f main *.o
+	rm resources.c
 
 .PHONY: clean

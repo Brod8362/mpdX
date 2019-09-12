@@ -11,14 +11,14 @@ GSimpleAction* mpd_stop_action;
 GSimpleAction* mpd_next_action;
 GSimpleAction* mpd_prev_action;
 
-static void mpd_play(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
+void mpd_play(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
 
-static void mpd_pause(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
+void mpd_pause(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
 
-static void mpd_stop(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
+void mpd_stop(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
 
-static void mpd_toggle(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
+void mpd_toggle(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
 
-static void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd);
+void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd);
 
 #endif

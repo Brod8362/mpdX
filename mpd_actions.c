@@ -4,27 +4,27 @@
 
 #include "mpd_actions.h"
 
-static void mpd_play(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
+void mpd_play(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
 	struct mpd_connection* mpd = (struct mpd_connection*)mpd_r;
 	mpd_send_pause(mpd, false);
 }
 
-static void mpd_pause(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
+void mpd_pause(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
 	struct mpd_connection* mpd = (struct mpd_connection*)mpd_r;
 	mpd_send_pause(mpd, true);
 }
 
-static void mpd_stop(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
+void mpd_stop(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
 	struct mpd_connection* mpd = (struct mpd_connection*)mpd_r;
 	mpd_send_stop(mpd);
 }
 
-static void mpd_toggle(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
+void mpd_toggle(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
 	struct mpd_connection* mpd = (struct mpd_connection*)mpd_r;
 	mpd_send_toggle_pause(mpd);
 }
 
-static void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd) {
+void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd) {
 	mpd_play_action = g_simple_action_new("play", NULL);
 	g_signal_connect(mpd_play_action, "activate", G_CALLBACK(mpd_play), mpd);
 
