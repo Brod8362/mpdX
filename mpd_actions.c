@@ -82,9 +82,11 @@ void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd) {
 
 	mpd_next_action = g_simple_action_new("next", NULL);
 	g_signal_connect(mpd_next_action, "activate", G_CALLBACK(mpd_next), mpd);
+	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(mpd_next_action));
 
 	mpd_prev_action = g_simple_action_new("prev", NULL);
 	g_signal_connect(mpd_prev_action, "activate", G_CALLBACK(mpd_prev), mpd);
+	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(mpd_prev_action));
 
 	mpd_playback_toggle = g_simple_action_new("toggle", NULL);
 	g_signal_connect(mpd_playback_toggle, "activate", G_CALLBACK(mpd_toggle), mpd);
@@ -102,7 +104,9 @@ void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd) {
 		{"app.play", mpd_play, NULL, NULL, NULL},
 		{"app.pause", mpd_pause, NULL, NULL, NULL},
 		{"app.stop", mpd_stop, NULL, NULL, NULL},
-		{"app.toggle", mpd_toggle, NULL, NULL, NULL}
+		{"app.toggle", mpd_toggle, NULL, NULL, NULL},
+		{"app.next", mpd_next, NULL, NULL, NULL},
+		{"app.prev", mpd_prev, NULL, NULL, NULL}
 	};	
 	g_action_map_add_action_entries(G_ACTION_MAP(app), app_entries, G_N_ELEMENTS(app_entries), app);
 }

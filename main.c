@@ -17,6 +17,8 @@ int mpd_timeout = 10000;
 
 struct mpd_connection *mpd;
 
+GtkTextBuffer* buffer; //text buffer for songname
+
 const char* argp_program_version = "mpdX v0.0";
 const char* argp_program_bug_address = "brod8362@gmail.com";
 static char doc[] = "mpd controller written in C for the X window system";
@@ -44,16 +46,22 @@ static void vol_change(GtkAdjustment* adj, gpointer v) {
 
 static void play_pause_button_click(GtkButton* button, gpointer a) {
 	mpd_run_toggle_pause(mpd);
-	const struct mpd_status* status;
+	struct mpd_status* status;
 	mpd_send_status(mpd);
 	status = mpd_recv_status(mpd);
-	enum mpd_state st = mpd_status_get_state(status);
+	enum mpd_state st = mpd_status_get_state((const struct mpd_status*)status);
 	GtkImage* but_img = (GtkImage*)gtk_button_get_image(button);
+	mpd_status_free(status);
 	if (st == MPD_STATE_PLAY) {
 		gtk_image_set_from_icon_name(but_img, "media-playback-pause", GTK_ICON_SIZE_BUTTON);
 	} else if (st == MPD_STATE_PAUSE) {
 		gtk_image_set_from_icon_name(but_img, "media-playback-start", GTK_ICON_SIZE_BUTTON);
 	}
+	struct mpd_song* song;
+	mpd_send_current_song(mpd);
+	song = mpd_recv_song(mpd);
+	const char* title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
+	gtk_text_buffer_set_text(buffer, title, -1);
 }
 
 static void init_grid(GtkWindow* window) {
@@ -64,6 +72,12 @@ static void init_grid(GtkWindow* window) {
 	GtkWidget* stop_button;
 	GtkWidget* vol_bar;
 	GtkWidget* vol_icon;
+	GtkWidget* textview;
+
+	buffer = gtk_text_buffer_new(NULL);
+	textview = gtk_text_view_new_with_buffer(buffer); //load view w/ buffer
+	gtk_text_view_set_editable(GTK_TEXT_VIEW(textview), false); //disable editing
+	gtk_text_buffer_set_text(buffer, "<DEFAULT>", -1); //fill a default value
 
 	GtkAdjustment* adjust;
 
@@ -73,7 +87,6 @@ static void init_grid(GtkWindow* window) {
 	prev_button = gtk_button_new_from_icon_name("media-skip-backward", GTK_ICON_SIZE_BUTTON);
 	next_button = gtk_button_new_from_icon_name("media-skip-forward", GTK_ICON_SIZE_BUTTON);
 	stop_button = gtk_button_new_from_icon_name("media-playback-stop", GTK_ICON_SIZE_BUTTON);
-
 	
 	vol_icon = gtk_image_new_from_icon_name("audio-volume-medium", GTK_ICON_SIZE_BUTTON);
 
@@ -81,12 +94,14 @@ static void init_grid(GtkWindow* window) {
 	vol_bar = gtk_scale_new(GTK_ORIENTATION_HORIZONTAL,adjust);
 	gtk_adjustment_set_value(adjust, mpd_get_vol(mpd));
 	
-	for (int i = 0; i <= 100; i+=25) {
+	for (int i = 0; i <= 100; i+=50) {
 		gtk_scale_add_mark(GTK_SCALE(vol_bar), i, GTK_BASELINE_POSITION_CENTER, NULL);
 	}
+	gtk_grid_set_row_spacing(grid, 20);
 
-	gtk_grid_attach(grid, vol_icon, 0, 1, 1, 1);
-	gtk_grid_attach(grid, vol_bar, 1, 1, 4, 1);
+	gtk_grid_attach(grid, textview, 0, 3, 10, 1);
+	gtk_grid_attach(grid, vol_icon, 0, 4, 1, 1);
+	gtk_grid_attach(grid, vol_bar, 1, 4, 4, 1);
 	gtk_grid_attach(grid, prev_button, 0, 5, 1, 1);
 	gtk_grid_attach(grid, toggle_button, 1, 5, 2, 1);
 	gtk_grid_attach(grid, stop_button, 3, 5, 1, 1);
@@ -110,7 +125,7 @@ static void initialize_menu_bar(GtkApplication* app) {
 	
 	builder = gtk_builder_new_from_resource("/byakuren/resources/menubar.xml");
 	app_menu = G_MENU_MODEL(gtk_builder_get_object(builder, "menubar"));
-	gtk_application_set_app_menu(app, app_menu);
+	gtk_application_set_menubar(app, app_menu);
 	g_object_unref(builder); //free memory used by builder
 }
 

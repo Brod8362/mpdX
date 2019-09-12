@@ -50,4 +50,15 @@
             </item>
         </submenu>
 
+        <submenu>
+            <attribute name="label">Track</attribute>
+            <item>
+                <attribute name="label">_Next Track</attribute>
+                <attribute name="action">app.next</attribute>
+            </item>
+            <item>
+                <attribute name="label">_Previous Track</attribute>
+                <attribute name="action">app.prev</attribute>
+            </item>
+        </submenu>
     </menu>
