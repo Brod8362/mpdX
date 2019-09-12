@@ -1,7 +1,7 @@
 CFLAGS = $(shell pkg-config gtk+-3.0 --cflags) -g3
 LIBS = $(shell pkg-config gtk+-3.0 --libs) -lmpdclient
 
-main: resources.c main.c mpd_actions.c
+main: resources.c main.c mpd_actions.c actions.c
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 
 resources.c: resources/window.xml

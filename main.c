@@ -9,6 +9,7 @@
 #include <mpd/entity.h>
 
 #include "mpd_actions.h"
+#include "actions.h"
 
 char* mpd_conn_dest = "localhost";
 int mpd_port = 6600;
@@ -29,24 +30,18 @@ static struct argp_option options[] = {
 
 static bool debug = false;
 
-
-
 static void debug_log(char* str) {
 	if (debug) {
 		printf("%s\n", str);
 	}
 }
 
-static int quit_action(GSimpleAction* action, GVariant* parameter, gpointer ap) {
-	g_object_unref(ap);
-	mpd_connection_free(mpd);
-	return 0;
-}
-
 static void initialize_menu_bar(GtkApplication* app) {
 	GtkBuilder* builder;
 	GMenuModel* app_menu;
 	GResource* resources;
+
+	init_actions(app);
 	
 	builder = gtk_builder_new_from_resource("/byakuren/resources/menubar.xml");
 	app_menu = G_MENU_MODEL(gtk_builder_get_object(builder, "menubar"));
