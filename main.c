@@ -42,6 +42,20 @@ static void vol_change(GtkAdjustment* adj, gpointer v) {
 	gtk_adjustment_set_value(adj, val);
 }
 
+static void play_pause_button_click(GtkButton* button, gpointer a) {
+	mpd_run_toggle_pause(mpd);
+	const struct mpd_status* status;
+	mpd_send_status(mpd);
+	status = mpd_recv_status(mpd);
+	enum mpd_state st = mpd_status_get_state(status);
+	GtkImage* but_img = (GtkImage*)gtk_button_get_image(button);
+	if (st == MPD_STATE_PLAY) {
+		gtk_image_set_from_icon_name(but_img, "media-playback-pause", GTK_ICON_SIZE_BUTTON);
+	} else if (st == MPD_STATE_PAUSE) {
+		gtk_image_set_from_icon_name(but_img, "media-playback-start", GTK_ICON_SIZE_BUTTON);
+	}
+}
+
 static void init_grid(GtkWindow* window) {
 	GtkGrid* grid;
 	GtkWidget* toggle_button;
@@ -78,7 +92,7 @@ static void init_grid(GtkWindow* window) {
 	gtk_grid_attach(grid, stop_button, 3, 5, 1, 1);
 	gtk_grid_attach(grid, next_button, 4, 5, 1, 1);
 	
-	g_signal_connect(toggle_button, "clicked", G_CALLBACK(mpd_toggle), mpd);
+	g_signal_connect(toggle_button, "clicked", G_CALLBACK(play_pause_button_click), NULL);
 	g_signal_connect(stop_button, "clicked", G_CALLBACK(mpd_stop), mpd);
 	g_signal_connect(adjust, "value-changed", G_CALLBACK(vol_change), NULL);
 
