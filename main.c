@@ -8,6 +8,8 @@
 #include <mpd/status.h>
 #include <mpd/entity.h>
 
+#include "mpd_actions.h"
+
 char* mpd_conn_dest = "localhost";
 int mpd_port = 6600;
 int mpd_timeout = 10000;
@@ -50,7 +52,6 @@ static int handle_mpd_error() {
 	debug_log((char*)mpd_connection_get_error_message(mpd));
 	mpd_connection_free(mpd);
 	return 1;
-
 }
 
 static int init_mpd() {
@@ -120,6 +121,9 @@ int main(int argc, char *argv[]) {
 	g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
 	status = g_application_run(G_APPLICATION(app), argc, argv);
 	g_object_unref(app);
+
+	/* init actions */
+	init_mpd_actions(app, mpd);
 
 	return status;
 }
