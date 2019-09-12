@@ -94,6 +94,8 @@ static void init_grid(GtkWindow* window) {
 	
 	g_signal_connect(toggle_button, "clicked", G_CALLBACK(play_pause_button_click), NULL);
 	g_signal_connect(stop_button, "clicked", G_CALLBACK(mpd_stop), mpd);
+	g_signal_connect(next_button, "clicked", G_CALLBACK(mpd_next), mpd);
+	g_signal_connect(prev_button, "clicked", G_CALLBACK(mpd_prev), mpd);
 	g_signal_connect(adjust, "value-changed", G_CALLBACK(vol_change), NULL);
 
 	gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(grid));

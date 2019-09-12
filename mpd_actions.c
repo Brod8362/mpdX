@@ -25,6 +25,16 @@ void mpd_toggle(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
 	mpd_run_toggle_pause(mpd);
 }
 
+void mpd_next(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
+	struct mpd_connection* mpd = (struct mpd_connection*)mpd_r;
+	mpd_run_next(mpd);
+}
+
+void mpd_prev(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
+	struct mpd_connection* mpd = (struct mpd_connection*)mpd_r;
+	mpd_run_previous(mpd);
+}
+
 void mpd_vol_up(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
 	struct mpd_connection* mpd = (struct mpd_connection*)mpd_r;
 	mpd_run_change_volume(mpd, +5);
@@ -71,10 +81,10 @@ void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd) {
 	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(mpd_stop_action));
 
 	mpd_next_action = g_simple_action_new("next", NULL);
-	//g_signal_connect(mpd_next_action, "activate", G_CALLBACK(), mpd);
+	g_signal_connect(mpd_next_action, "activate", G_CALLBACK(mpd_next), mpd);
 
 	mpd_prev_action = g_simple_action_new("prev", NULL);
-	//g_signal_connect(mpd_prev_action, "activate", G_CALLBACK(mpd_play), mpd);
+	g_signal_connect(mpd_prev_action, "activate", G_CALLBACK(mpd_prev), mpd);
 
 	mpd_playback_toggle = g_simple_action_new("toggle", NULL);
 	g_signal_connect(mpd_playback_toggle, "activate", G_CALLBACK(mpd_toggle), mpd);
