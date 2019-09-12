@@ -47,7 +47,10 @@ int mpd_get_vol(struct mpd_connection* mpd) {
 	int v = mpd_status_get_volume(status);
 	free(status);
 	return v;
+}
 
+int mpd_set_vol(struct mpd_connection* mpd, int vol) {
+	mpd_run_set_volume(mpd, vol);
 }
 
 void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd) {

@@ -36,6 +36,12 @@ static void debug_log(char* str) {
 	}
 }
 
+static void vol_change(GtkAdjustment* adj, gpointer v) {
+	int val = (int)gtk_adjustment_get_value(adj);
+	mpd_set_vol(mpd, val);
+	gtk_adjustment_set_value(adj, val);
+}
+
 static void init_grid(GtkWindow* window) {
 	GtkGrid* grid;
 	GtkWidget* toggle_button;
@@ -64,7 +70,7 @@ static void init_grid(GtkWindow* window) {
 	for (int i = 0; i <= 100; i+=25) {
 		gtk_scale_add_mark(GTK_SCALE(vol_bar), i, GTK_BASELINE_POSITION_CENTER, NULL);
 	}
-	
+
 	gtk_grid_attach(grid, vol_icon, 0, 1, 1, 1);
 	gtk_grid_attach(grid, vol_bar, 1, 1, 4, 1);
 	gtk_grid_attach(grid, prev_button, 0, 5, 1, 1);
@@ -74,6 +80,7 @@ static void init_grid(GtkWindow* window) {
 	
 	g_signal_connect(toggle_button, "clicked", G_CALLBACK(mpd_toggle), mpd);
 	g_signal_connect(stop_button, "clicked", G_CALLBACK(mpd_stop), mpd);
+	g_signal_connect(adjust, "value-changed", G_CALLBACK(vol_change), NULL);
 
 	gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(grid));
 }
