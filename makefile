@@ -1,11 +1,17 @@
-LDLIBS = -lmpdclient
+CFLAGS = $(shell pkg-config gtk+-3.0 --cflags) -g3
+LIBS = $(shell pkg-config gtk+-3.0 --libs) -lmpdclient
 
-main:
-	mkdir .tmp
-	glib-compile-resources --target=.tmp/resources.c --generate-source resources/window.xml
-	gcc $$(pkg-config gtk+-3.0 --cflags) main.c mpd_actions.c .tmp/resources.c -o main $$(pkg-config gtk+-3.0 --libs) $(LDLIBS) -g3
-	rm -rf .tmp
+main: resources.o main.o mpd_actions.o
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+
+mpd_actions.o: mpd_actions.c
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+
+resources.c: resources/window.xml
+	glib-compile-resources --target=$@ --generate-source $^
 
 clean:
 	rm -rf .tmp
-	rm main
+	rm -f main mpd_actions.o
+
+.PHONY: clean
