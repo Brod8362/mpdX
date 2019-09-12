@@ -33,6 +33,11 @@
                 <attribute name="label">_Stop</attribute>
                 <attribute name="action">app.stop</attribute>
             </item>
+            <item>
+                <attribute name="label">_Toggle</attribute>
+                <attribute name="action">app.toggle</attribute>
+                <attribute name="accel">t</attribute>
+            </item>
         </submenu>
 
     </menu>
