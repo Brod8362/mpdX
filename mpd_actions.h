@@ -27,6 +27,8 @@ void mpd_vol_down(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
 
 void mpd_vol_mute(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
 
+int mpd_get_vol(struct mpd_connection* mpd);
+
 void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd);
 
 #endif

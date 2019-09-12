@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include <mpd/client.h>
+#include <mpd/status.h>
 #include <stdbool.h>
 
 #include "mpd_actions.h"
@@ -37,6 +38,16 @@ void mpd_vol_down(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
 void mpd_vol_mute(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
 	struct mpd_connection* mpd = (struct mpd_connection*)mpd_r;
 	mpd_run_set_volume(mpd, 0);
+}
+
+int mpd_get_vol(struct mpd_connection* mpd) {
+	struct mpd_status* status;
+	mpd_send_status(mpd);
+	status = mpd_recv_status(mpd);
+	int v = mpd_status_get_volume(status);
+	free(status);
+	return v;
+
 }
 
 void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd) {

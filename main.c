@@ -36,6 +36,42 @@ static void debug_log(char* str) {
 	}
 }
 
+static void init_grid(GtkWindow* window) {
+	GtkGrid* grid;
+	GtkWidget* toggle_button;
+	GtkWidget* prev_button;
+	GtkWidget* next_button;
+	GtkWidget* stop_button;
+	GtkWidget* vol_bar;
+	GtkAdjustment* adjust;
+
+	grid = GTK_GRID(gtk_grid_new());
+
+	toggle_button = gtk_button_new_from_icon_name("media-playback-start", GTK_ICON_SIZE_BUTTON);
+	prev_button = gtk_button_new_from_icon_name("media-skip-backward", GTK_ICON_SIZE_BUTTON);
+	next_button = gtk_button_new_from_icon_name("media-skip-forward", GTK_ICON_SIZE_BUTTON);
+	stop_button = gtk_button_new_from_icon_name("media-playback-stop", GTK_ICON_SIZE_BUTTON);
+
+	adjust = gtk_adjustment_new(0, 0, 100, 1, 0, 0);
+	vol_bar = gtk_scale_new(GTK_ORIENTATION_HORIZONTAL,adjust);
+	gtk_adjustment_set_value(adjust, mpd_get_vol(mpd));
+	
+	for (int i = 0; i <= 100; i+=25) {
+		gtk_scale_add_mark(GTK_SCALE(vol_bar), i, GTK_BASELINE_POSITION_CENTER, NULL);
+	}
+
+	gtk_grid_attach(grid, vol_bar, 0, 1, 5, 1);
+	gtk_grid_attach(grid, prev_button, 0, 5, 1, 1);
+	gtk_grid_attach(grid, toggle_button, 1, 5, 2, 1);
+	gtk_grid_attach(grid, stop_button, 3, 5, 1, 1);
+	gtk_grid_attach(grid, next_button, 4, 5, 1, 1);
+	
+	g_signal_connect(toggle_button, "clicked", G_CALLBACK(mpd_toggle), mpd);
+	g_signal_connect(stop_button, "clicked", G_CALLBACK(mpd_stop), mpd);
+
+	gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(grid));
+}
+
 static void initialize_menu_bar(GtkApplication* app) {
 	GtkBuilder* builder;
 	GMenuModel* app_menu;
@@ -81,7 +117,7 @@ static void activate(GtkApplication* app, gpointer data) {
 
 	/* init menubar */
 	initialize_menu_bar(app);
-
+	init_grid(GTK_WINDOW(window));
 	gtk_widget_show_all(window);
 }
 
