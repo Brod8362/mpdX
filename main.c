@@ -5,6 +5,15 @@
 #include <stdbool.h>
 #include <argp.h>
 
+const char* argp_program_version = "mpdX v0.0";
+const char* argp_program_bug_address = "brod8362@gmail.com";
+static char doc[] = "mpd controller written in C for the X window system";
+static char args_doc[] = "";
+static struct argp_option options[] = { 
+	{ "debug", 'd', 0, 0, "Enable debug mode"},
+	{ 0 }
+};
+
 static bool debug = false;
 
 static void debug_log(char* str) {
@@ -39,15 +48,27 @@ static void activate(GtkApplication* app, gpointer data) {
 	gtk_widget_show_all(window);
 }
 
+static error_t parse_opt(int key, char* arg, struct argp_state *state) {
+	 struct arguments *arguments = state->input;
+    switch (key) {
+		case 'd': 
+			debug=true;
+			debug_log("running in debug mode");
+			break;
+		default: return ARGP_ERR_UNKNOWN;
+    }   
+    return 0;
+}
+
+/* main argp struct */
+static struct argp argp = { options, parse_opt, args_doc, 0, 0, 0};
+// known issue - arguments say "unknown option"
+
 int main(int argc, char *argv[]) {
-	int opt;
-	while ((opt= getopt(argc, argv, ":if:lrx")) != -1) {
-		switch (opt) {
-			case 'd':
-				debug=true;
-				debug_log("running in debug mode");
-		}	
-	}
+	/* cli argument init */
+	argp_parse(&argp, argc, argv, 0, 0, 0);
+
+	/* gtk init */
 	GtkApplication* app;
 	int status;
 	app = gtk_application_new("pw.byakuren.mpdX", G_APPLICATION_FLAGS_NONE);
