@@ -23,7 +23,7 @@ static char doc[] = "mpd controller written in C for the X window system";
 static char args_doc[] = "";
 static struct argp_option options[] = { 
 	{ "debug", 'd', 0, 0, "Enable debug mode"},
-	{ "port", 'p', "PORT", 0, "Set mpd port to conncet on"},
+	{ "port", 'p', "PORT", 0, "Set mpd port to connect on"},
 	{ "ip", 'l', "ADDRESS", 0, "Set IP address of mpd server"},
 	{ 0 }
 };
