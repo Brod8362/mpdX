@@ -12,6 +12,7 @@ GSimpleAction* mpd_next_action;
 GSimpleAction* mpd_prev_action;
 GSimpleAction* mpd_vol_up_action;
 GSimpleAction* mpd_vol_down_action;
+GSimpleAction* mpd_mute_action;
 
 void mpd_play(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
 

@@ -17,7 +17,8 @@ int mpd_timeout = 10000;
 
 struct mpd_connection *mpd;
 
-GtkTextBuffer* buffer; //text buffer for songname
+GtkTextBuffer* title_buffer; //text buffer for songname
+GtkTextBuffer* artist_buffer;
 
 const char* argp_program_version = "mpdX v0.0";
 const char* argp_program_bug_address = "brod8362@gmail.com";
@@ -44,6 +45,18 @@ static void vol_change(GtkAdjustment* adj, gpointer v) {
 	gtk_adjustment_set_value(adj, val);
 }
 
+void update_track_info() {
+	struct mpd_song* song;
+	mpd_send_current_song(mpd);
+	song = mpd_recv_song(mpd);
+	const char* title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
+	const char* artist = mpd_song_get_tag(song, MPD_TAG_ARTIST, 0);
+	gtk_text_buffer_set_text(title_buffer, title, -1);
+	gtk_text_buffer_set_text(artist_buffer, artist, -1);
+	mpd_song_free(song);
+}
+
+
 static void play_pause_button_click(GtkButton* button, gpointer a) {
 	mpd_run_toggle_pause(mpd);
 	struct mpd_status* status;
@@ -57,11 +70,7 @@ static void play_pause_button_click(GtkButton* button, gpointer a) {
 	} else if (st == MPD_STATE_PAUSE) {
 		gtk_image_set_from_icon_name(but_img, "media-playback-start", GTK_ICON_SIZE_BUTTON);
 	}
-	struct mpd_song* song;
-	mpd_send_current_song(mpd);
-	song = mpd_recv_song(mpd);
-	const char* title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
-	gtk_text_buffer_set_text(buffer, title, -1);
+	update_track_info();
 }
 
 static void init_grid(GtkWindow* window) {
@@ -73,11 +82,17 @@ static void init_grid(GtkWindow* window) {
 	GtkWidget* vol_bar;
 	GtkWidget* vol_icon;
 	GtkWidget* textview;
+	GtkWidget* artistview;
 
-	buffer = gtk_text_buffer_new(NULL);
-	textview = gtk_text_view_new_with_buffer(buffer); //load view w/ buffer
+	title_buffer = gtk_text_buffer_new(NULL);
+	textview = gtk_text_view_new_with_buffer(title_buffer); //load view w/ buffer
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(textview), false); //disable editing
-	gtk_text_buffer_set_text(buffer, "<DEFAULT>", -1); //fill a default value
+	gtk_text_buffer_set_text(title_buffer, "<DEFAULT>", -1); //fill a default value
+
+	artist_buffer = gtk_text_buffer_new(NULL);
+	artistview = gtk_text_view_new_with_buffer(artist_buffer);
+	gtk_text_view_set_editable(GTK_TEXT_VIEW(artistview), false);
+	gtk_text_buffer_set_text(artist_buffer, "<DEFAULT>", -1);
 
 	GtkAdjustment* adjust;
 
@@ -97,9 +112,9 @@ static void init_grid(GtkWindow* window) {
 	for (int i = 0; i <= 100; i+=50) {
 		gtk_scale_add_mark(GTK_SCALE(vol_bar), i, GTK_BASELINE_POSITION_CENTER, NULL);
 	}
-	gtk_grid_set_row_spacing(grid, 20);
-
-	gtk_grid_attach(grid, textview, 0, 3, 10, 1);
+	gtk_grid_set_row_spacing(grid, 3);
+	gtk_grid_attach(grid, textview, 0, 2, 10, 1);
+	gtk_grid_attach(grid, artistview, 0, 3, 7, 1);
 	gtk_grid_attach(grid, vol_icon, 0, 4, 1, 1);
 	gtk_grid_attach(grid, vol_bar, 1, 4, 4, 1);
 	gtk_grid_attach(grid, prev_button, 0, 5, 1, 1);

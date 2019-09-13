@@ -48,6 +48,11 @@
                 <attribute name="action">app.voldown</attribute>
                 <attribute name="accel">minus</attribute>
             </item>
+            <item>
+                <attribute name="label">_Mute</attribute>
+                <attribute name="action">app.mute</attribute>
+                <attribute name="accel">m</attribute>
+            </item>
         </submenu>
 
         <submenu>

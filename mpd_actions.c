@@ -100,13 +100,18 @@ void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd) {
 	g_signal_connect(mpd_vol_down_action, "activate", G_CALLBACK(mpd_vol_down), mpd);
 	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(mpd_vol_down_action));
 
+	mpd_mute_action = g_simple_action_new("mute", NULL);
+	g_signal_connect(mpd_mute_action, "activate", G_CALLBACK(mpd_vol_mute), mpd);
+	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(mpd_mute_action));
+
 	GActionEntry app_entries[] = {
 		{"app.play", mpd_play, NULL, NULL, NULL},
 		{"app.pause", mpd_pause, NULL, NULL, NULL},
 		{"app.stop", mpd_stop, NULL, NULL, NULL},
 		{"app.toggle", mpd_toggle, NULL, NULL, NULL},
 		{"app.next", mpd_next, NULL, NULL, NULL},
-		{"app.prev", mpd_prev, NULL, NULL, NULL}
+		{"app.prev", mpd_prev, NULL, NULL, NULL},
+		{"app.mute", mpd_vol_mute, NULL, NULL, NULL}
 	};	
 	g_action_map_add_action_entries(G_ACTION_MAP(app), app_entries, G_N_ELEMENTS(app_entries), app);
 }
