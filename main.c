@@ -20,6 +20,8 @@ struct mpd_connection *mpd;
 GtkTextBuffer* title_buffer; //text buffer for songname
 GtkTextBuffer* artist_buffer;
 
+GtkButton* play_pause_button;
+
 const char* argp_program_version = "mpdX v0.0";
 const char* argp_program_bug_address = "brod8362@gmail.com";
 static char doc[] = "mpd controller written in C for the X window system";
@@ -57,13 +59,12 @@ void update_track_info() {
 }
 
 
-static void play_pause_button_click(GtkButton* button, gpointer a) {
-	mpd_run_toggle_pause(mpd);
+void play_pause_button_click() {
 	struct mpd_status* status;
 	mpd_send_status(mpd);
 	status = mpd_recv_status(mpd);
 	enum mpd_state st = mpd_status_get_state((const struct mpd_status*)status);
-	GtkImage* but_img = (GtkImage*)gtk_button_get_image(button);
+	GtkImage* but_img = (GtkImage*)gtk_button_get_image(play_pause_button);
 	mpd_status_free(status);
 	if (st == MPD_STATE_PLAY) {
 		gtk_image_set_from_icon_name(but_img, "media-playback-pause", GTK_ICON_SIZE_BUTTON);
@@ -71,6 +72,23 @@ static void play_pause_button_click(GtkButton* button, gpointer a) {
 		gtk_image_set_from_icon_name(but_img, "media-playback-start", GTK_ICON_SIZE_BUTTON);
 	}
 	update_track_info();
+}
+
+static void fill_playlist(GtkWidget* list_box) {
+	struct mpd_status* status;
+	mpd_send_status(mpd);
+	status = mpd_recv_status(mpd);
+	int len = mpd_status_get_queue_length(status);
+	struct mpd_song* song;
+	for (int i = len-1; i >= 0; i--) {
+		mpd_send_get_queue_song_pos(mpd, i);
+		song = mpd_recv_song(mpd);
+		g_assert(song != NULL);
+		const char* title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
+		GtkWidget* song_button = gtk_button_new_with_label(title);
+		gtk_list_box_insert(GTK_LIST_BOX(list_box), song_button, 0);
+		mpd_song_free(song);
+	}
 }
 
 static void init_grid(GtkWindow* window) {
@@ -83,6 +101,7 @@ static void init_grid(GtkWindow* window) {
 	GtkWidget* vol_icon;
 	GtkWidget* textview;
 	GtkWidget* artistview;
+	GtkWidget* list_box;
 
 	title_buffer = gtk_text_buffer_new(NULL);
 	textview = gtk_text_view_new_with_buffer(title_buffer); //load view w/ buffer
@@ -96,6 +115,9 @@ static void init_grid(GtkWindow* window) {
 
 	GtkAdjustment* adjust;
 
+	list_box = gtk_list_box_new();
+	//fill_playlist(list_box);
+
 	grid = GTK_GRID(gtk_grid_new());
 	
 	toggle_button = gtk_button_new_from_icon_name("media-playback-start", GTK_ICON_SIZE_BUTTON);
@@ -103,6 +125,8 @@ static void init_grid(GtkWindow* window) {
 	next_button = gtk_button_new_from_icon_name("media-skip-forward", GTK_ICON_SIZE_BUTTON);
 	stop_button = gtk_button_new_from_icon_name("media-playback-stop", GTK_ICON_SIZE_BUTTON);
 	
+	play_pause_button = GTK_BUTTON(toggle_button);
+
 	vol_icon = gtk_image_new_from_icon_name("audio-volume-medium", GTK_ICON_SIZE_BUTTON);
 
 	adjust = gtk_adjustment_new(0, 0, 100, 1, 0, 0);
@@ -113,8 +137,10 @@ static void init_grid(GtkWindow* window) {
 		gtk_scale_add_mark(GTK_SCALE(vol_bar), i, GTK_BASELINE_POSITION_CENTER, NULL);
 	}
 	gtk_grid_set_row_spacing(grid, 3);
-	gtk_grid_attach(grid, textview, 0, 2, 10, 1);
-	gtk_grid_attach(grid, artistview, 0, 3, 7, 1);
+	gtk_grid_attach(grid, textview, 0, 2, 7, 1);
+	gtk_grid_attach(grid, artistview, 0, 3, 5, 1);
+	gtk_grid_attach(grid, gtk_label_new("Queue"), 8, 0, 3, 1);
+	gtk_grid_attach(grid, list_box, 8, 1, 8, 3);
 	gtk_grid_attach(grid, vol_icon, 0, 4, 1, 1);
 	gtk_grid_attach(grid, vol_bar, 1, 4, 4, 1);
 	gtk_grid_attach(grid, prev_button, 0, 5, 1, 1);
@@ -122,7 +148,7 @@ static void init_grid(GtkWindow* window) {
 	gtk_grid_attach(grid, stop_button, 3, 5, 1, 1);
 	gtk_grid_attach(grid, next_button, 4, 5, 1, 1);
 	
-	g_signal_connect(toggle_button, "clicked", G_CALLBACK(play_pause_button_click), NULL);
+	g_signal_connect(toggle_button, "clicked", G_CALLBACK(mpd_toggle), mpd);
 	g_signal_connect(stop_button, "clicked", G_CALLBACK(mpd_stop), mpd);
 	g_signal_connect(next_button, "clicked", G_CALLBACK(mpd_next), mpd);
 	g_signal_connect(prev_button, "clicked", G_CALLBACK(mpd_prev), mpd);

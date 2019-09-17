@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #include "mpd_actions.h"
+#include "main.h"
 
 void mpd_play(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
 	struct mpd_connection* mpd = (struct mpd_connection*)mpd_r;
@@ -23,6 +24,7 @@ void mpd_stop(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
 void mpd_toggle(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
 	struct mpd_connection* mpd = (struct mpd_connection*)mpd_r;
 	mpd_run_toggle_pause(mpd);
+	play_pause_button_click();
 }
 
 void mpd_next(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {

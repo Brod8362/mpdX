@@ -3,6 +3,7 @@
 
 #include <gtk/gtk.h>
 #include <mpd/client.h>
+#include "main.h"
 
 GSimpleAction* mpd_play_action;
 GSimpleAction* mpd_pause_action;
