@@ -21,6 +21,7 @@ GtkTextBuffer* title_buffer; //text buffer for songname
 GtkTextBuffer* artist_buffer;
 
 GtkButton* play_pause_button;
+GtkAdjustment* volume_bar;
 
 const char* argp_program_version = "mpdX v0.0";
 const char* argp_program_bug_address = "brod8362@gmail.com";
@@ -41,10 +42,14 @@ static void debug_log(char* str) {
 	}
 }
 
-static void vol_change(GtkAdjustment* adj, gpointer v) {
-	int val = (int)gtk_adjustment_get_value(adj);
+void set_volume_bar_level(int val) {
+	gtk_adjustment_set_value(volume_bar, val);
+}
+
+static void vol_change() {
+	int val = (int)gtk_adjustment_get_value(volume_bar);
 	mpd_set_vol(mpd, val);
-	gtk_adjustment_set_value(adj, val);
+	set_volume_bar_level(val);
 }
 
 void update_track_info() {
@@ -53,8 +58,13 @@ void update_track_info() {
 	song = mpd_recv_song(mpd);
 	const char* title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
 	const char* artist = mpd_song_get_tag(song, MPD_TAG_ARTIST, 0);
-	gtk_text_buffer_set_text(title_buffer, title, -1);
-	gtk_text_buffer_set_text(artist_buffer, artist, -1);
+	if (title != NULL) {
+		gtk_text_buffer_set_text(title_buffer, title, -1);
+		gtk_text_buffer_set_text(artist_buffer, artist, -1);
+	} else {
+		gtk_text_buffer_set_text(title_buffer, mpd_song_get_uri(song), -1);
+		gtk_text_buffer_set_text(artist_buffer, "<Unknown Artist>", -1);
+	}
 	mpd_song_free(song);
 }
 
@@ -130,6 +140,7 @@ static void init_grid(GtkWindow* window) {
 	vol_icon = gtk_image_new_from_icon_name("audio-volume-medium", GTK_ICON_SIZE_BUTTON);
 
 	adjust = gtk_adjustment_new(0, 0, 100, 1, 0, 0);
+	volume_bar=adjust;
 	vol_bar = gtk_scale_new(GTK_ORIENTATION_HORIZONTAL,adjust);
 	gtk_adjustment_set_value(adjust, mpd_get_vol(mpd));
 	
@@ -155,6 +166,8 @@ static void init_grid(GtkWindow* window) {
 	g_signal_connect(adjust, "value-changed", G_CALLBACK(vol_change), NULL);
 
 	gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(grid));
+
+	update_track_info();
 }
 
 static void initialize_menu_bar(GtkApplication* app) {

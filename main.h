@@ -10,5 +10,7 @@ void update_track_info();
 
 void play_pause_button_click();
 
+void set_volume_bar_level();
+
 
 #endif

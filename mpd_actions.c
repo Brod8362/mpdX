@@ -30,26 +30,31 @@ void mpd_toggle(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
 void mpd_next(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
 	struct mpd_connection* mpd = (struct mpd_connection*)mpd_r;
 	mpd_run_next(mpd);
+	update_track_info();
 }
 
 void mpd_prev(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
 	struct mpd_connection* mpd = (struct mpd_connection*)mpd_r;
 	mpd_run_previous(mpd);
+	update_track_info();
 }
 
 void mpd_vol_up(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
 	struct mpd_connection* mpd = (struct mpd_connection*)mpd_r;
 	mpd_run_change_volume(mpd, +5);
+	set_volume_bar_level(mpd_get_vol(mpd));
 }
 
 void mpd_vol_down(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
 	struct mpd_connection* mpd = (struct mpd_connection*)mpd_r;
 	mpd_run_change_volume(mpd, -5);
+	set_volume_bar_level(mpd_get_vol(mpd));
 }
 
 void mpd_vol_mute(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
 	struct mpd_connection* mpd = (struct mpd_connection*)mpd_r;
 	mpd_run_set_volume(mpd, 0);
+	set_volume_bar_level(mpd_get_vol(mpd));
 }
 
 int mpd_get_vol(struct mpd_connection* mpd) {
