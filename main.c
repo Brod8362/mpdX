@@ -134,6 +134,11 @@ static void init_grid(GtkWindow* window) {
 	prev_button = gtk_button_new_from_icon_name("media-skip-backward", GTK_ICON_SIZE_BUTTON);
 	next_button = gtk_button_new_from_icon_name("media-skip-forward", GTK_ICON_SIZE_BUTTON);
 	stop_button = gtk_button_new_from_icon_name("media-playback-stop", GTK_ICON_SIZE_BUTTON);
+
+	GtkWidget* buttons[] = {toggle_button, prev_button, next_button, stop_button};
+	for (int i = 0; i < G_N_ELEMENTS(buttons); i++) {
+		gtk_widget_set_hexpand(buttons[i], true);
+	}
 	
 	play_pause_button = GTK_BUTTON(toggle_button);
 
@@ -164,6 +169,9 @@ static void init_grid(GtkWindow* window) {
 	g_signal_connect(next_button, "clicked", G_CALLBACK(mpd_next), mpd);
 	g_signal_connect(prev_button, "clicked", G_CALLBACK(mpd_prev), mpd);
 	g_signal_connect(adjust, "value-changed", G_CALLBACK(vol_change), NULL);
+
+	gtk_widget_set_hexpand(grid, true);
+	gtk_widget_set_vexpand(grid, true);
 
 	gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(grid));
 
