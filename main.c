@@ -7,6 +7,7 @@
 #include <mpd/client.h>
 #include <mpd/status.h>
 #include <mpd/entity.h>
+#include <mpd/socket.h>
 
 #include "mpd_actions.h"
 #include "actions.h"
@@ -17,8 +18,8 @@ int mpd_timeout = 10000;
 
 struct mpd_connection *mpd;
 
-GtkTextBuffer* title_buffer; //text buffer for songname
-GtkTextBuffer* artist_buffer;
+GtkWidget* title_text; //text buffer for songname
+GtkWidget* artist_text;
 
 GtkButton* play_pause_button;
 GtkAdjustment* volume_bar;
@@ -58,12 +59,19 @@ void update_track_info() {
 	song = mpd_recv_song(mpd);
 	const char* title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
 	const char* artist = mpd_song_get_tag(song, MPD_TAG_ARTIST, 0);
+	const char* album = mpd_song_get_tag(song, MPD_TAG_ALBUM, 0);
 	if (title != NULL) {
-		gtk_text_buffer_set_text(title_buffer, title, -1);
-		gtk_text_buffer_set_text(artist_buffer, artist, -1);
+		const char* str[128];
+		if (album == NULL) {
+			album = "<none>";
+		}
+		malloc(sizeof(artist)+sizeof(album)+2);
+		sprintf(str, "%s [%s]", artist, album);
+		gtk_label_set_text(GTK_LABEL(title_text), title);
+		gtk_label_set_text(GTK_LABEL(artist_text), str);
 	} else {
-		gtk_text_buffer_set_text(title_buffer, mpd_song_get_uri(song), -1);
-		gtk_text_buffer_set_text(artist_buffer, "<Unknown Artist>", -1);
+		gtk_label_set_text(GTK_LABEL(title_text), mpd_song_get_uri(song));
+		gtk_label_set_text(GTK_LABEL(artist_text), "<Unknown Artist>");
 	}
 	mpd_song_free(song);
 }
@@ -99,6 +107,7 @@ static void fill_playlist(GtkWidget* list_box) {
 		gtk_list_box_insert(GTK_LIST_BOX(list_box), song_button, 0);
 		mpd_song_free(song);
 	}
+	mpd_status_free(status);
 }
 
 static void init_grid(GtkWindow* window) {
@@ -113,16 +122,12 @@ static void init_grid(GtkWindow* window) {
 	GtkWidget* artistview;
 	GtkWidget* list_box;
 
-	title_buffer = gtk_text_buffer_new(NULL);
-	textview = gtk_text_view_new_with_buffer(title_buffer); //load view w/ buffer
-	gtk_text_view_set_editable(GTK_TEXT_VIEW(textview), false); //disable editing
-	gtk_text_buffer_set_text(title_buffer, "<DEFAULT>", -1); //fill a default value
-
-	artist_buffer = gtk_text_buffer_new(NULL);
-	artistview = gtk_text_view_new_with_buffer(artist_buffer);
-	gtk_text_view_set_editable(GTK_TEXT_VIEW(artistview), false);
-	gtk_text_buffer_set_text(artist_buffer, "<DEFAULT>", -1);
-
+	textview = gtk_label_new("<DEFAULT>"); //load view w/ buffer
+	artistview = gtk_label_new("<DEFAULT>");
+	title_text = textview;
+	artist_text = artistview;
+	
+	
 	GtkAdjustment* adjust;
 
 	list_box = gtk_list_box_new();
@@ -139,9 +144,10 @@ static void init_grid(GtkWindow* window) {
 	for (int i = 0; i < G_N_ELEMENTS(buttons); i++) {
 		gtk_widget_set_hexpand(buttons[i], true);
 	}
+	gtk_widget_set_hexpand(list_box, true);
 	
 	play_pause_button = GTK_BUTTON(toggle_button);
-
+	
 	vol_icon = gtk_image_new_from_icon_name("audio-volume-medium", GTK_ICON_SIZE_BUTTON);
 
 	adjust = gtk_adjustment_new(0, 0, 100, 1, 0, 0);
@@ -153,12 +159,12 @@ static void init_grid(GtkWindow* window) {
 		gtk_scale_add_mark(GTK_SCALE(vol_bar), i, GTK_BASELINE_POSITION_CENTER, NULL);
 	}
 	gtk_grid_set_row_spacing(grid, 3);
-	gtk_grid_attach(grid, textview, 0, 2, 7, 1);
-	gtk_grid_attach(grid, artistview, 0, 3, 5, 1);
-	gtk_grid_attach(grid, gtk_label_new("Queue"), 8, 0, 3, 1);
-	gtk_grid_attach(grid, list_box, 8, 1, 8, 3);
+	gtk_grid_attach(grid, textview, 0, 0, 2, 1);
+	gtk_grid_attach(grid, artistview, 0, 3, 3, 1);
+	gtk_grid_attach(grid, gtk_label_new("Queue"), 3, 0, 3, 1);
+	gtk_grid_attach(grid, list_box, 3, 1, 3, 3);
 	gtk_grid_attach(grid, vol_icon, 0, 4, 1, 1);
-	gtk_grid_attach(grid, vol_bar, 1, 4, 4, 1);
+	gtk_grid_attach(grid, vol_bar, 1, 4, 5, 1);
 	gtk_grid_attach(grid, prev_button, 0, 5, 1, 1);
 	gtk_grid_attach(grid, toggle_button, 1, 5, 2, 1);
 	gtk_grid_attach(grid, stop_button, 3, 5, 1, 1);
@@ -228,8 +234,8 @@ static void activate(GtkApplication* app, gpointer data) {
 }
 
 static error_t parse_opt(int key, char* arg, struct argp_state *state) {
-	 struct arguments *arguments = state->input;
-    switch (key) {
+	struct arguments *arguments = state->input;
+	switch (key) {
 		case 'd': 
 			debug=true;
 			debug_log("running in debug mode");
@@ -241,8 +247,8 @@ static error_t parse_opt(int key, char* arg, struct argp_state *state) {
 			mpd_conn_dest=arg;
 			break;
 		default: return ARGP_ERR_UNKNOWN;
-    }   
-    return 0;
+	}
+	return 0;
 }
 
 /* main argp struct */
