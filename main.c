@@ -23,6 +23,7 @@ GtkWidget* artist_text;
 
 GtkButton* play_pause_button;
 GtkAdjustment* volume_bar;
+GtkAdjustment* time_bar;
 
 const char* argp_program_version = "mpdX v0.0";
 const char* argp_program_bug_address = "brod8362@gmail.com";
@@ -53,10 +54,22 @@ static void vol_change() {
 	set_volume_bar_level(val);
 }
 
+void update_play_bar() {
+	struct mpd_song* song = mpd_run_current_song(mpd);
+	struct mpd_status* status = mpd_run_status(mpd);
+	
+	int length = mpd_song_get_duration(song);
+	int elapsed = mpd_status_get_elapsed_time(status);
+
+	gtk_adjustment_set_value(time_bar, elapsed);
+	gtk_adjustment_set_upper(time_bar, length);
+
+	mpd_song_free(song);
+	mpd_status_free(status);
+}
+
 void update_track_info() {
-	struct mpd_song* song;
-	mpd_send_current_song(mpd);
-	song = mpd_recv_song(mpd);
+	struct mpd_song* song = mpd_run_current_song(mpd);
 	if (song == NULL) {
 		puts("song is null in update_track_info()");
 		return;
@@ -78,6 +91,7 @@ void update_track_info() {
 		gtk_label_set_text(GTK_LABEL(artist_text), "<Unknown Artist>");
 	}
 	mpd_song_free(song);
+	update_play_bar();
 }
 
 
@@ -97,14 +111,11 @@ void play_pause_button_click() {
 }
 
 static void fill_playlist(GtkWidget* list_box) {
-	struct mpd_status* status;
-	mpd_send_status(mpd);
-	status = mpd_recv_status(mpd);
+	struct mpd_status* status = mpd_run_status(mpd);
 	int len = mpd_status_get_queue_length(status);
 	struct mpd_song* song;
 	for (int i = len-1; i >= 0; i--) {
-		mpd_send_get_queue_song_pos(mpd, i);
-		song = mpd_recv_song(mpd);
+		song = mpd_run_get_queue_song_pos(mpd, i);
 		g_assert(song != NULL);
 		const char* title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
 		GtkWidget* song_button = gtk_button_new_with_label(title);
@@ -125,6 +136,7 @@ static void init_grid(GtkWindow* window) {
 	GtkWidget* textview;
 	GtkWidget* artistview;
 	GtkWidget* list_box;
+	GtkWidget* time_elapsed_bar;
 
 	textview = gtk_label_new("<DEFAULT>"); //load view w/ buffer
 	artistview = gtk_label_new("<DEFAULT>");
@@ -134,8 +146,10 @@ static void init_grid(GtkWindow* window) {
 
 	GtkAdjustment* adjust;
 
+	GtkWidget* scrolled_list = gtk_scrolled_window_new(gtk_adjustment_new(0, 0, 100, 0, 0, 0), gtk_adjustment_new(0, 0, 100, 0, 0, 0));
 	list_box = gtk_list_box_new();
-	//fill_playlist(list_box);
+	fill_playlist(list_box);
+	gtk_container_add(scrolled_list, list_box);
 
 	grid = GTK_GRID(gtk_grid_new());
 	
@@ -158,22 +172,26 @@ static void init_grid(GtkWindow* window) {
 	volume_bar=adjust;
 	vol_bar = gtk_scale_new(GTK_ORIENTATION_HORIZONTAL,adjust);
 	gtk_adjustment_set_value(adjust, mpd_get_vol(mpd));
+	
+	time_bar = gtk_adjustment_new(0, 0, 1, 1 ,0, 0);
+	time_elapsed_bar = gtk_scale_new(GTK_ORIENTATION_HORIZONTAL, time_bar);
 
 	for (int i = 0; i <= 100; i+=50) {
 		gtk_scale_add_mark(GTK_SCALE(vol_bar), i, GTK_BASELINE_POSITION_CENTER, NULL);
 	}
+
 	gtk_grid_set_row_spacing(grid, 3);
-	
 	gtk_grid_attach(grid, textview, 0, 1, 2, 1);
 	gtk_grid_attach(grid, artistview, 0, 2, 2, 1);
 	gtk_grid_attach(grid, gtk_label_new("Queue"), 3, 0, 3, 1);
-	gtk_grid_attach(grid, list_box, 3, 1, 3, 2);
+	gtk_grid_attach(grid, scrolled_list, 3, 1, 3, 2);
 	gtk_grid_attach(grid, vol_icon, 0, 3, 1, 1);
 	gtk_grid_attach(grid, vol_bar, 1, 3, 2, 1);
 	gtk_grid_attach(grid, prev_button, 0, 4, 1, 1);
 	gtk_grid_attach(grid, toggle_button, 1, 4, 2, 1);
 	gtk_grid_attach(grid, stop_button, 3, 4, 1, 1);
 	gtk_grid_attach(grid, next_button, 4, 4, 1, 1);
+	gtk_grid_attach(grid, time_elapsed_bar, 0, 5, 5, 1);
 	
 	g_signal_connect(toggle_button, "clicked", G_CALLBACK(mpd_toggle), mpd);
 	g_signal_connect(stop_button, "clicked", G_CALLBACK(mpd_stop), mpd);
