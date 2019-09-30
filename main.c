@@ -57,6 +57,10 @@ void update_track_info() {
 	struct mpd_song* song;
 	mpd_send_current_song(mpd);
 	song = mpd_recv_song(mpd);
+	if (song == NULL) {
+		puts("song is null in update_track_info()");
+		return;
+	}
 	const char* title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
 	const char* artist = mpd_song_get_tag(song, MPD_TAG_ARTIST, 0);
 	const char* album = mpd_song_get_tag(song, MPD_TAG_ALBUM, 0);
@@ -126,8 +130,8 @@ static void init_grid(GtkWindow* window) {
 	artistview = gtk_label_new("<DEFAULT>");
 	title_text = textview;
 	artist_text = artistview;
-	
-	
+
+
 	GtkAdjustment* adjust;
 
 	list_box = gtk_list_box_new();
@@ -154,21 +158,22 @@ static void init_grid(GtkWindow* window) {
 	volume_bar=adjust;
 	vol_bar = gtk_scale_new(GTK_ORIENTATION_HORIZONTAL,adjust);
 	gtk_adjustment_set_value(adjust, mpd_get_vol(mpd));
-	
+
 	for (int i = 0; i <= 100; i+=50) {
 		gtk_scale_add_mark(GTK_SCALE(vol_bar), i, GTK_BASELINE_POSITION_CENTER, NULL);
 	}
 	gtk_grid_set_row_spacing(grid, 3);
-	gtk_grid_attach(grid, textview, 0, 0, 2, 1);
-	gtk_grid_attach(grid, artistview, 0, 3, 3, 1);
+	
+	gtk_grid_attach(grid, textview, 0, 1, 2, 1);
+	gtk_grid_attach(grid, artistview, 0, 2, 2, 1);
 	gtk_grid_attach(grid, gtk_label_new("Queue"), 3, 0, 3, 1);
-	gtk_grid_attach(grid, list_box, 3, 1, 3, 3);
-	gtk_grid_attach(grid, vol_icon, 0, 4, 1, 1);
-	gtk_grid_attach(grid, vol_bar, 1, 4, 5, 1);
-	gtk_grid_attach(grid, prev_button, 0, 5, 1, 1);
-	gtk_grid_attach(grid, toggle_button, 1, 5, 2, 1);
-	gtk_grid_attach(grid, stop_button, 3, 5, 1, 1);
-	gtk_grid_attach(grid, next_button, 4, 5, 1, 1);
+	gtk_grid_attach(grid, list_box, 3, 1, 3, 2);
+	gtk_grid_attach(grid, vol_icon, 0, 3, 1, 1);
+	gtk_grid_attach(grid, vol_bar, 1, 3, 2, 1);
+	gtk_grid_attach(grid, prev_button, 0, 4, 1, 1);
+	gtk_grid_attach(grid, toggle_button, 1, 4, 2, 1);
+	gtk_grid_attach(grid, stop_button, 3, 4, 1, 1);
+	gtk_grid_attach(grid, next_button, 4, 4, 1, 1);
 	
 	g_signal_connect(toggle_button, "clicked", G_CALLBACK(mpd_toggle), mpd);
 	g_signal_connect(stop_button, "clicked", G_CALLBACK(mpd_stop), mpd);
@@ -198,7 +203,9 @@ static void initialize_menu_bar(GtkApplication* app) {
 }
 
 static int handle_mpd_error() {
-	g_assert(mpd_connection_get_error(mpd) != MPD_ERROR_SUCCESS);
+	if (mpd_connection_get_error(mpd) == MPD_ERROR_SUCCESS) {
+		return 0;
+	}
 
 	debug_log((char*)mpd_connection_get_error_message(mpd));
 	mpd_connection_free(mpd);
@@ -207,7 +214,6 @@ static int handle_mpd_error() {
 
 static int init_mpd() {
 	mpd = mpd_connection_new(mpd_conn_dest, mpd_port, mpd_timeout);
-	
 	if (mpd_connection_get_error(mpd) != MPD_ERROR_SUCCESS) {
 		debug_log("failed to connect to mpd");
 		return handle_mpd_error(mpd);
@@ -274,8 +280,6 @@ int main(int argc, char *argv[]) {
 	g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
 	status = g_application_run(G_APPLICATION(app), argc, argv);
 	g_object_unref(app);
-
-	
 
 	return status;
 }

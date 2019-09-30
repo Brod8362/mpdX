@@ -5,3 +5,6 @@ resources.c
 .vscode/settings.json
 .vscode/c_cpp_properties.json
 core
+.vscode/launch.json
+.vscode/tasks.json
+.vscode
