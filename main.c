@@ -118,7 +118,14 @@ static void fill_playlist(GtkWidget* list_box) {
 		song = mpd_run_get_queue_song_pos(mpd, i);
 		g_assert(song != NULL);
 		const char* title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
-		GtkWidget* song_button = gtk_button_new_with_label(title);
+		const char* final[128];
+		snprintf(final, sizeof final, "%d: %s", i+1, title);
+		GtkWidget* song_button = gtk_button_new_with_label(final);
+		gtk_button_set_image_position(GTK_BUTTON(song_button), i);
+		struct mpd_pass* henlo_score = malloc(sizeof *henlo_score);
+		henlo_score->mpd=mpd;
+		henlo_score->v=i;
+		g_signal_connect(song_button, "clicked", G_CALLBACK(mpd_play_song_pos), henlo_score);
 		gtk_list_box_insert(GTK_LIST_BOX(list_box), song_button, 0);
 		mpd_song_free(song);
 	}
@@ -149,7 +156,7 @@ static void init_grid(GtkWindow* window) {
 	GtkWidget* scrolled_list = gtk_scrolled_window_new(gtk_adjustment_new(0, 0, 100, 0, 0, 0), gtk_adjustment_new(0, 0, 100, 0, 0, 0));
 	list_box = gtk_list_box_new();
 	fill_playlist(list_box);
-	gtk_container_add(scrolled_list, list_box);
+	gtk_container_add(GTK_CONTAINER(scrolled_list), list_box);
 
 	grid = GTK_GRID(gtk_grid_new());
 	
@@ -180,11 +187,14 @@ static void init_grid(GtkWindow* window) {
 		gtk_scale_add_mark(GTK_SCALE(vol_bar), i, GTK_BASELINE_POSITION_CENTER, NULL);
 	}
 
-	gtk_grid_set_row_spacing(grid, 3);
+	//gtk_grid_set_row_spacing(grid, 3);
+	gtk_grid_set_row_homogeneous(grid, true);
+	gtk_grid_set_column_homogeneous(grid, true);
+
 	gtk_grid_attach(grid, textview, 0, 1, 2, 1);
 	gtk_grid_attach(grid, artistview, 0, 2, 2, 1);
-	gtk_grid_attach(grid, gtk_label_new("Queue"), 3, 0, 3, 1);
-	gtk_grid_attach(grid, scrolled_list, 3, 1, 3, 2);
+	gtk_grid_attach(grid, gtk_label_new("Queue"), 3, 0, 2, 1);
+	gtk_grid_attach(grid, scrolled_list, 3, 1, 2, 2);
 	gtk_grid_attach(grid, vol_icon, 0, 3, 1, 1);
 	gtk_grid_attach(grid, vol_bar, 1, 3, 2, 1);
 	gtk_grid_attach(grid, prev_button, 0, 4, 1, 1);
@@ -199,8 +209,8 @@ static void init_grid(GtkWindow* window) {
 	g_signal_connect(prev_button, "clicked", G_CALLBACK(mpd_prev), mpd);
 	g_signal_connect(adjust, "value-changed", G_CALLBACK(vol_change), NULL);
 
-	gtk_widget_set_hexpand(grid, true);
-	gtk_widget_set_vexpand(grid, true);
+	gtk_widget_set_hexpand(GTK_WIDGET(grid), true);
+	gtk_widget_set_vexpand(GTK_WIDGET(grid), true);
 
 	gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(grid));
 

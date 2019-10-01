@@ -4,6 +4,11 @@
 
 #include <gtk/gtk.h>
 
+struct mpd_pass {
+    int v;
+    struct mpd_connection* mpd;
+};
+
 GtkButton* play_pause_button;
 
 void update_track_info();

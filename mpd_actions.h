@@ -14,6 +14,7 @@ GSimpleAction* mpd_prev_action;
 GSimpleAction* mpd_vol_up_action;
 GSimpleAction* mpd_vol_down_action;
 GSimpleAction* mpd_mute_action;
+GSimpleAction* mpd_play_song_pos_action;
 
 void mpd_play(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
 
@@ -33,10 +34,14 @@ void mpd_next(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
 
 void mpd_prev(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
 
+void mpd_play_song_pos(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
+
 int mpd_get_vol(struct mpd_connection* mpd);
 
 int mpd_set_vol(struct mpd_connection* mpd, int vol);
 
 void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd);
+
+
 
 #endif
