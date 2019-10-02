@@ -78,14 +78,14 @@ void update_track_info() {
 	const char* artist = mpd_song_get_tag(song, MPD_TAG_ARTIST, 0);
 	const char* album = mpd_song_get_tag(song, MPD_TAG_ALBUM, 0);
 	if (title != NULL) {
-		const char* str[128];
+		char* str[128];
 		if (album == NULL) {
 			album = "<none>";
 		}
 		malloc(sizeof(artist)+sizeof(album)+2);
-		sprintf(str, "%s [%s]", artist, album);
+		snprintf(str, "%s [%s]", artist, album);
 		gtk_label_set_text(GTK_LABEL(title_text), title);
-		gtk_label_set_text(GTK_LABEL(artist_text), str);
+		gtk_label_set_text(GTK_LABEL(artist_text), (const char*)str);
 	} else {
 		gtk_label_set_text(GTK_LABEL(title_text), mpd_song_get_uri(song));
 		gtk_label_set_text(GTK_LABEL(artist_text), "<Unknown Artist>");
@@ -96,9 +96,10 @@ void update_track_info() {
 
 
 void play_pause_button_click() {
-	struct mpd_status* status;
-	mpd_send_status(mpd);
-	status = mpd_recv_status(mpd);
+	struct mpd_status* status = mpd_run_status(mpd);
+	if (status == NULL) {
+		handle_mpd_error();
+	}
 	enum mpd_state st = mpd_status_get_state((const struct mpd_status*)status);
 	GtkImage* but_img = (GtkImage*)gtk_button_get_image(play_pause_button);
 	mpd_status_free(status);
@@ -118,9 +119,7 @@ static void fill_playlist(GtkWidget* list_box) {
 		song = mpd_run_get_queue_song_pos(mpd, i);
 		g_assert(song != NULL);
 		const char* title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
-		const char* final[128];
-		snprintf(final, sizeof final, "%d: %s", i+1, title);
-		GtkWidget* song_button = gtk_button_new_with_label(final);
+		GtkWidget* song_button = gtk_button_new_with_label(title);
 		gtk_button_set_image_position(GTK_BUTTON(song_button), i);
 		struct mpd_pass* henlo_score = malloc(sizeof *henlo_score);
 		henlo_score->mpd=mpd;
@@ -230,12 +229,12 @@ static void initialize_menu_bar(GtkApplication* app) {
 	g_object_unref(builder); //free memory used by builder
 }
 
-static int handle_mpd_error() {
+int handle_mpd_error() {
 	if (mpd_connection_get_error(mpd) == MPD_ERROR_SUCCESS) {
 		return 0;
 	}
 
-	debug_log((char*)mpd_connection_get_error_message(mpd));
+	printf((char*)mpd_connection_get_error_message(mpd));
 	mpd_connection_free(mpd);
 	return 1;
 }
