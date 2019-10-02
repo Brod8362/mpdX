@@ -99,6 +99,7 @@ void play_pause_button_click() {
 	struct mpd_status* status = mpd_run_status(mpd);
 	if (status == NULL) {
 		handle_mpd_error();
+		return;
 	}
 	enum mpd_state st = mpd_status_get_state((const struct mpd_status*)status);
 	GtkImage* but_img = (GtkImage*)gtk_button_get_image(play_pause_button);
@@ -120,7 +121,6 @@ static void fill_playlist(GtkWidget* list_box) {
 		g_assert(song != NULL);
 		const char* title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
 		GtkWidget* song_button = gtk_button_new_with_label(title);
-		gtk_button_set_image_position(GTK_BUTTON(song_button), i);
 		struct mpd_pass* henlo_score = malloc(sizeof *henlo_score);
 		henlo_score->mpd=mpd;
 		henlo_score->v=i;
@@ -230,11 +230,12 @@ static void initialize_menu_bar(GtkApplication* app) {
 }
 
 int handle_mpd_error() {
-	if (mpd_connection_get_error(mpd) == MPD_ERROR_SUCCESS) {
+	enum mpd_error err = mpd_connection_get_error(mpd);
+	if (err == MPD_ERROR_SUCCESS) {
 		return 0;
 	}
-
-	printf((char*)mpd_connection_get_error_message(mpd));
+	
+	printf("ERROR: %s\n",(char*)mpd_connection_get_error_message(mpd));
 	mpd_connection_free(mpd);
 	return 1;
 }
