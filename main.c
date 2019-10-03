@@ -78,14 +78,15 @@ void update_track_info() {
 	const char* artist = mpd_song_get_tag(song, MPD_TAG_ARTIST, 0);
 	const char* album = mpd_song_get_tag(song, MPD_TAG_ALBUM, 0);
 	if (title != NULL) {
-		char* str[128];
 		if (album == NULL) {
 			album = "<none>";
 		}
-		malloc(sizeof(artist)+sizeof(album)+2);
-		snprintf(str, "%s [%s]", artist, album);
+		size_t str_max = strlen(artist) + strlen(album) + 4;
+		char* str = malloc(str_max);
+		snprintf(str, str_max, "%s [%s]", artist, album);
 		gtk_label_set_text(GTK_LABEL(title_text), title);
 		gtk_label_set_text(GTK_LABEL(artist_text), (const char*)str);
+		free(str);
 	} else {
 		gtk_label_set_text(GTK_LABEL(title_text), mpd_song_get_uri(song));
 		gtk_label_set_text(GTK_LABEL(artist_text), "<Unknown Artist>");
