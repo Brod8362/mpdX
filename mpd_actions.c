@@ -70,10 +70,17 @@ int mpd_set_vol(struct mpd_connection* mpd, int vol) {
 	mpd_run_set_volume(mpd, vol);
 }
 
-void mpd_play_song_pos(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
-	struct mpd_pass* pass = (struct mpd_pass*)mpd_r;
+void mpd_play_song_pos(struct mpd_pass* pass) {
 	mpd_run_play_pos(pass->mpd, pass->v);
 	update_track_info();
+}
+
+void mpd_play_song_pos_button(GtkButton* button, gpointer mpd_r) {
+	mpd_play_song_pos((struct mpd_pass*)mpd_r);
+}
+
+void mpd_play_song_pos_act(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
+	mpd_play_song_pos((struct mpd_pass*)mpd_r);
 }
 
 void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd) {
@@ -116,10 +123,6 @@ void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd) {
 	mpd_mute_action = g_simple_action_new("mute", NULL);
 	g_signal_connect(mpd_mute_action, "activate", G_CALLBACK(mpd_vol_mute), mpd);
 	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(mpd_mute_action));
-
-	mpd_play_song_pos_action = g_simple_action_new("playpos", NULL);
-	g_signal_connect(mpd_play_song_pos_action, "activate", G_CALLBACK(mpd_play_song_pos), mpd);
-	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(mpd_play_song_pos_action));
 
 	GActionEntry app_entries[] = {
 		{"app.play", mpd_play, NULL, NULL, NULL},

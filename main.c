@@ -125,7 +125,7 @@ static void fill_playlist(GtkWidget* list_box) {
 		struct mpd_pass* henlo_score = malloc(sizeof *henlo_score);
 		henlo_score->mpd=mpd;
 		henlo_score->v=i;
-		g_signal_connect(song_button, "clicked", G_CALLBACK(mpd_play_song_pos), henlo_score);
+		g_signal_connect(song_button, "clicked", G_CALLBACK(mpd_play_song_pos_button), henlo_score);
 		gtk_list_box_insert(GTK_LIST_BOX(list_box), song_button, 0);
 		mpd_song_free(song);
 	}
