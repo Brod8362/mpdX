@@ -17,5 +17,6 @@ void play_pause_button_click();
 
 void set_volume_bar_level();
 
+int handle_mpd_error();
 
 #endif
