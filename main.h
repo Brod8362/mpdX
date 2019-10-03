@@ -11,6 +11,8 @@ struct mpd_pass {
 
 GtkButton* play_pause_button;
 
+void display_non_fatal_error(const char* message);
+
 void display_fatal_error(const char* message);
 
 void update_track_info();
