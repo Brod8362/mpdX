@@ -5,7 +5,7 @@
 #include <gtk/gtk.h>
 
 struct mpd_pass {
-    int v;
+    unsigned int v;
     struct mpd_connection* mpd;
 };
 
@@ -13,6 +13,7 @@ struct queue_button_group {
     GtkWidget* container;
     GtkWidget* song;
     GtkWidget* remove;
+    struct mpd_pass* pass;
 };
 
 GtkButton* play_pause_button;

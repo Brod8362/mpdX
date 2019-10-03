@@ -81,6 +81,10 @@ void mpd_play_song_id(struct mpd_pass* pass) {
 	mpd_run_play_id(pass->mpd, pass->v);
 }
 
+void mpd_unqueue_song_id(struct mpd_pass* pass) {
+	mpd_run_delete_id(pass->mpd, pass->v);
+}
+
 void mpd_play_song_id_button(GtkButton* button, gpointer mpd_r) {
 	mpd_play_song_id((struct mpd_pass*)mpd_r);
 }

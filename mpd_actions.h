@@ -37,6 +37,8 @@ void mpd_next(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
 
 void mpd_prev(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
 
+void mpd_unqueue_song_id(struct mpd_pass* pass);
+
 void mpd_play_song_id(struct mpd_pass* pass);
 
 void mpd_play_song_id_button(GtkButton* button, gpointer mpd_r);

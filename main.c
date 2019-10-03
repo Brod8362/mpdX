@@ -132,8 +132,8 @@ void play_pause_button_click() {
 }
 
 static void destroy_button_group(struct queue_button_group* group) {
-	gtk_widget_destroy(group->remove);
-	gtk_widget_destroy(group->song);
+	mpd_unqueue_song_id(group->pass);
+	gtk_grid_remove_row(GTK_GRID(group->container), 0);
 	gtk_widget_destroy(group->container);
 	free(group);
 }
@@ -161,12 +161,48 @@ static void fill_playlist(GtkWidget* list_box) {
 		group->container=grid;
 		group->remove=remove_button;
 		group->song=song_button;
+		group->pass=henlo_score;
 		g_signal_connect(song_button, "clicked", G_CALLBACK(mpd_play_song_id_button), henlo_score);
-		//g_signal_connect(remove_button, "clicked", G_CALLBACK(destroy_button_group), group);
+		g_signal_connect(remove_button, "clicked", G_CALLBACK(destroy_button_group), group);
 		gtk_list_box_insert(GTK_LIST_BOX(list_box), grid, 0);
 		mpd_song_free(song);
 	}
 	mpd_status_free(status);
+}
+
+static void init_playlist_controls(GtkGrid* grid) {
+	GtkWidget* add_track;
+	GtkWidget* clear;
+	GtkWidget* save_playlist;
+	GtkWidget* load_playlist;
+
+	add_track = gtk_button_new_from_icon_name("list-add", GTK_ICON_SIZE_BUTTON);
+	clear = gtk_button_new_from_icon_name("document-revert", GTK_ICON_SIZE_BUTTON);
+	save_playlist = gtk_button_new_from_icon_name("document-save", GTK_ICON_SIZE_BUTTON);
+	load_playlist = gtk_button_new_from_icon_name("document-open", GTK_ICON_SIZE_BUTTON);
+
+	gtk_grid_attach(grid, add_track, 0, 1, 1, 1);
+	gtk_grid_attach(grid, clear, 1, 1, 1, 1);
+	gtk_grid_attach(grid, save_playlist, 2, 1, 1, 1);
+	gtk_grid_attach(grid, load_playlist, 3, 1, 1, 1);
+
+	gtk_grid_set_column_homogeneous(grid, true);
+}
+
+static void init_mini_grid(GtkGrid* grid) {
+	GtkWidget* repeat_button;
+	GtkWidget* shuffle_button;
+	GtkWidget* single_button;
+	
+	repeat_button = gtk_button_new_from_icon_name("media-playlist-repeat", GTK_ICON_SIZE_BUTTON);
+	shuffle_button = gtk_button_new_from_icon_name("media-playlist-shuffle", GTK_ICON_SIZE_BUTTON);
+	single_button = gtk_button_new_with_label("1");
+
+	gtk_grid_attach(grid, repeat_button, 0,1,1,1);
+	gtk_grid_attach(grid, shuffle_button, 1,1,1,1);
+	gtk_grid_attach(grid, single_button, 2,1,1,1);
+
+	gtk_grid_set_column_homogeneous(grid, true);
 }
 
 static void init_grid(GtkWindow* window) {
@@ -181,6 +217,8 @@ static void init_grid(GtkWindow* window) {
 	GtkWidget* artistview;
 	GtkWidget* list_box;
 	GtkWidget* time_elapsed_bar;
+	GtkGrid* mini_control_grid;
+	GtkGrid* playlist_control_grid;
 
 	textview = gtk_label_new("<DEFAULT>"); //load view w/ buffer
 	artistview = gtk_label_new("<DEFAULT>");
@@ -196,6 +234,13 @@ static void init_grid(GtkWindow* window) {
 	gtk_container_add(GTK_CONTAINER(scrolled_list), list_box);
 
 	grid = GTK_GRID(gtk_grid_new());
+
+	mini_control_grid = GTK_GRID(gtk_grid_new());
+	init_mini_grid(mini_control_grid);
+
+	playlist_control_grid = GTK_GRID(gtk_grid_new());
+	init_playlist_controls(playlist_control_grid);
+
 	
 	toggle_button = gtk_button_new_from_icon_name("media-playback-start", GTK_ICON_SIZE_BUTTON);
 	prev_button = gtk_button_new_from_icon_name("media-skip-backward", GTK_ICON_SIZE_BUTTON);
@@ -238,6 +283,8 @@ static void init_grid(GtkWindow* window) {
 	gtk_grid_attach(grid, toggle_button, 1, 4, 2, 1);
 	gtk_grid_attach(grid, stop_button, 3, 4, 1, 1);
 	gtk_grid_attach(grid, next_button, 4, 4, 1, 1);
+	gtk_grid_attach(grid, GTK_WIDGET(playlist_control_grid), 3, 3, 1, 1);
+	gtk_grid_attach(grid, GTK_WIDGET(mini_control_grid), 4, 3, 1, 1);
 	gtk_grid_attach(grid, time_elapsed_bar, 0, 5, 5, 1);
 	
 	g_signal_connect(toggle_button, "clicked", G_CALLBACK(mpd_toggle_button), mpd);
