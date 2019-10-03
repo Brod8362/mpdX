@@ -17,6 +17,7 @@ int mpd_port = 6600;
 int mpd_timeout = 10000;
 
 struct mpd_connection *mpd;
+GtkApplication* app;
 
 GtkWidget* title_text; //text buffer for songname
 GtkWidget* artist_text;
@@ -42,6 +43,14 @@ static void debug_log(char* str) {
 	if (debug) {
 		printf("%s\n", str);
 	}
+}
+
+void display_fatal_error(const char* message) {
+	GtkWidget* dialog;
+	GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
+	dialog = gtk_message_dialog_new(gtk_widget_get_parent_window(GTK_WIDGET(play_pause_button)), flags, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "A fatal error has occured. The application will now close. Reason:\n%s", message);
+	gtk_dialog_run(GTK_DIALOG(dialog));
+	g_signal_connect_swapped(dialog, "response", G_CALLBACK(g_object_unref), app);
 }
 
 void set_volume_bar_level(int val) {
@@ -235,8 +244,7 @@ int handle_mpd_error() {
 	if (err == MPD_ERROR_SUCCESS) {
 		return 0;
 	}
-	
-	printf("ERROR: %s\n",(char*)mpd_connection_get_error_message(mpd));
+	display_fatal_error(mpd_connection_get_error_message(mpd));
 	mpd_connection_free(mpd);
 	return 1;
 }
@@ -301,7 +309,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	/* gtk init */
-	GtkApplication* app;
 	int status;
 	app = gtk_application_new("pw.byakuren.mpdX", G_APPLICATION_FLAGS_NONE);
 	/* init actions */
