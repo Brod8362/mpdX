@@ -1,4 +1,4 @@
-#ifndef INLCUDED_ACTIONS_H
+#ifndef INCLUDED_ACTIONS_H
 #define INCLUDED_ACTIONS_H
 
 #include <gtk/gtk.h>
