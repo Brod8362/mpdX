@@ -191,8 +191,8 @@ static void init_grid(GtkWindow* window) {
 	gtk_grid_set_row_homogeneous(grid, true);
 	gtk_grid_set_column_homogeneous(grid, true);
 
-	gtk_grid_attach(grid, textview, 0, 1, 2, 1);
-	gtk_grid_attach(grid, artistview, 0, 2, 2, 1);
+	gtk_grid_attach(grid, textview, 0, 1, 3, 1);
+	gtk_grid_attach(grid, artistview, 0, 2, 3, 1);
 	gtk_grid_attach(grid, gtk_label_new("Queue"), 3, 0, 2, 1);
 	gtk_grid_attach(grid, scrolled_list, 3, 1, 2, 2);
 	gtk_grid_attach(grid, vol_icon, 0, 3, 1, 1);
