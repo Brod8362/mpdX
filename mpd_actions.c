@@ -79,6 +79,7 @@ int mpd_set_vol(struct mpd_connection* mpd, int vol) {
 
 void mpd_play_song_id(struct mpd_pass* pass) {
 	mpd_run_play_id(pass->mpd, pass->v);
+	update_track_info();
 }
 
 void mpd_unqueue_song_id(struct mpd_pass* pass) {
