@@ -77,6 +77,14 @@ int mpd_set_vol(struct mpd_connection* mpd, int vol) {
 	mpd_run_set_volume(mpd, vol);
 }
 
+void mpd_play_song_id(struct mpd_pass* pass) {
+	mpd_run_play_id(pass->mpd, pass->v);
+}
+
+void mpd_play_song_id_button(GtkButton* button, gpointer mpd_r) {
+	mpd_play_song_id((struct mpd_pass*)mpd_r);
+}
+
 void mpd_play_song_pos(struct mpd_pass* pass) {
 	mpd_run_play_pos(pass->mpd, pass->v);
 	update_track_info();
