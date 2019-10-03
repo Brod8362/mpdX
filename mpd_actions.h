@@ -21,7 +21,11 @@ void mpd_pause(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
 
 void mpd_stop(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
 
-void mpd_toggle(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
+void mpd_toggle(struct mpd_connection* mpd);
+
+void mpd_toggle_act(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
+
+void mpd_toggle_button(GtkButton* button, gpointer mpd_r);
 
 void mpd_vol_up(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
 

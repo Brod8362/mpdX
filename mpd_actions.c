@@ -21,10 +21,16 @@ void mpd_stop(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
 	mpd_run_stop(mpd);
 }
 
-void mpd_toggle(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
-	struct mpd_connection* mpd = (struct mpd_connection*)mpd_r;
+void mpd_toggle(struct mpd_connection* mpd) {
 	mpd_run_toggle_pause(mpd);
 	play_pause_button_click();
+}
+void mpd_toggle_button(GtkButton* button, gpointer mpd_r) {
+	mpd_toggle((struct mpd_connection*)mpd_r);
+}
+
+void mpd_toggle_act(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
+	mpd_toggle((struct mpd_connection*)mpd_r);
 }
 
 void mpd_next(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
@@ -124,7 +130,7 @@ void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd) {
 		{"app.play", mpd_play, NULL, NULL, NULL},
 		{"app.pause", mpd_pause, NULL, NULL, NULL},
 		{"app.stop", mpd_stop, NULL, NULL, NULL},
-		{"app.toggle", mpd_toggle, NULL, NULL, NULL},
+		{"app.toggle", mpd_toggle_act, NULL, NULL, NULL},
 		{"app.next", mpd_next, NULL, NULL, NULL},
 		{"app.prev", mpd_prev, NULL, NULL, NULL},
 		{"app.mute", mpd_vol_mute, NULL, NULL, NULL}
