@@ -79,10 +79,6 @@ void mpd_play_song_pos_button(GtkButton* button, gpointer mpd_r) {
 	mpd_play_song_pos((struct mpd_pass*)mpd_r);
 }
 
-void mpd_play_song_pos_act(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
-	mpd_play_song_pos((struct mpd_pass*)mpd_r);
-}
-
 void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd) {
 
 	g_assert(mpd != NULL);
