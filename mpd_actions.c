@@ -25,6 +25,7 @@ void mpd_toggle(struct mpd_connection* mpd) {
 	mpd_run_toggle_pause(mpd);
 	play_pause_button_click();
 }
+
 void mpd_toggle_button(GtkButton* button, gpointer mpd_r) {
 	mpd_toggle((struct mpd_connection*)mpd_r);
 }
@@ -111,7 +112,7 @@ void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd) {
 	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(mpd_prev_action));
 
 	mpd_playback_toggle = g_simple_action_new("toggle", NULL);
-	g_signal_connect(mpd_playback_toggle, "activate", G_CALLBACK(mpd_toggle), mpd);
+	g_signal_connect(mpd_playback_toggle, "activate", G_CALLBACK(mpd_toggle_act), mpd);
 	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(mpd_playback_toggle));
 
 	mpd_vol_up_action = g_simple_action_new("volup", NULL);
