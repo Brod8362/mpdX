@@ -203,7 +203,7 @@ static void init_grid(GtkWindow* window) {
 	gtk_grid_attach(grid, next_button, 4, 4, 1, 1);
 	gtk_grid_attach(grid, time_elapsed_bar, 0, 5, 5, 1);
 	
-	g_signal_connect(toggle_button, "clicked", G_CALLBACK(mpd_toggle), mpd);
+	g_signal_connect(toggle_button, "clicked", G_CALLBACK(mpd_toggle_button), mpd);
 	g_signal_connect(stop_button, "clicked", G_CALLBACK(mpd_stop), mpd);
 	g_signal_connect(next_button, "clicked", G_CALLBACK(mpd_next), mpd);
 	g_signal_connect(prev_button, "clicked", G_CALLBACK(mpd_prev), mpd);
