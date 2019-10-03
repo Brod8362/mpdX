@@ -131,6 +131,13 @@ void play_pause_button_click() {
 	update_track_info();
 }
 
+static void destroy_button_group(struct queue_button_group* group) {
+	gtk_widget_destroy(group->remove);
+	gtk_widget_destroy(group->song);
+	gtk_widget_destroy(group->container);
+	free(group);
+}
+
 static void fill_playlist(GtkWidget* list_box) {
 	struct mpd_status* status = mpd_run_status(mpd);
 	int len = mpd_status_get_queue_length(status);
@@ -138,13 +145,25 @@ static void fill_playlist(GtkWidget* list_box) {
 	for (int i = len-1; i >= 0; i--) {
 		song = mpd_run_get_queue_song_pos(mpd, i);
 		g_assert(song != NULL);
+		unsigned int id = mpd_song_get_id(song);
 		const char* title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
+		GtkWidget* grid = gtk_grid_new();
 		GtkWidget* song_button = gtk_button_new_with_label(title);
+		GtkWidget* remove_button = gtk_button_new_from_icon_name("list-remove", GTK_ICON_SIZE_BUTTON);
+		gtk_grid_attach(GTK_GRID(grid), song_button, 0, 1, 3, 1);
+		gtk_grid_attach(GTK_GRID(grid), remove_button, 3, 1, 1, 1);
+		gtk_widget_set_hexpand(song_button, true);
 		struct mpd_pass* henlo_score = malloc(sizeof *henlo_score);
 		henlo_score->mpd=mpd;
-		henlo_score->v=i;
-		g_signal_connect(song_button, "clicked", G_CALLBACK(mpd_play_song_pos_button), henlo_score);
-		gtk_list_box_insert(GTK_LIST_BOX(list_box), song_button, 0);
+		henlo_score->v=id;
+
+		struct queue_button_group* group = malloc(sizeof *group);
+		group->container=grid;
+		group->remove=remove_button;
+		group->song=song_button;
+		g_signal_connect(song_button, "clicked", G_CALLBACK(mpd_play_song_id_button), henlo_score);
+		//g_signal_connect(remove_button, "clicked", G_CALLBACK(destroy_button_group), group);
+		gtk_list_box_insert(GTK_LIST_BOX(list_box), grid, 0);
 		mpd_song_free(song);
 	}
 	mpd_status_free(status);

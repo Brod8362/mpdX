@@ -9,6 +9,12 @@ struct mpd_pass {
     struct mpd_connection* mpd;
 };
 
+struct queue_button_group {
+    GtkWidget* container;
+    GtkWidget* song;
+    GtkWidget* remove;
+};
+
 GtkButton* play_pause_button;
 
 void display_non_fatal_error(const char* message);
