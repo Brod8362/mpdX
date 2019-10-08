@@ -27,6 +27,8 @@ GtkButton* play_pause_button;
 GtkAdjustment* volume_bar;
 GtkAdjustment* time_bar;
 
+GtkToggleButton* repeat_but;
+
 const char* argp_program_version = "mpdX v0.0";
 const char* argp_program_bug_address = "brod8362@gmail.com";
 static char doc[] = "mpd controller written in C for the X window system";
@@ -86,6 +88,10 @@ void update_play_bar() {
 	mpd_status_free(status);
 }
 
+void update_repeat_button() {
+	gtk_toggle_button_set_active(repeat_but, mpd_get_repeat(mpd));
+}
+
 void update_track_info() {
 	struct mpd_song* song = mpd_run_current_song(mpd);
 	if (song == NULL) {
@@ -111,6 +117,7 @@ void update_track_info() {
 	}
 	mpd_song_free(song);
 	update_play_bar();
+	update_repeat_button();
 }
 
 
@@ -193,10 +200,15 @@ static void init_mini_grid(GtkGrid* grid) {
 	GtkWidget* repeat_button;
 	GtkWidget* shuffle_button;
 	GtkWidget* single_button;
-	
-	repeat_button = gtk_button_new_from_icon_name("media-playlist-repeat", GTK_ICON_SIZE_BUTTON);
+	repeat_button = gtk_toggle_button_new_with_label("REP");
 	shuffle_button = gtk_button_new_from_icon_name("media-playlist-shuffle", GTK_ICON_SIZE_BUTTON);
 	single_button = gtk_button_new_with_label("1");
+
+	repeat_but = GTK_TOGGLE_BUTTON(repeat_button);
+
+	g_signal_connect(repeat_but, "clicked", G_CALLBACK(mpd_toggle_repeat_button), mpd);
+
+	gtk_toggle_button_set_mode(repeat_but, false);
 
 	gtk_grid_attach(grid, repeat_button, 0,1,1,1);
 	gtk_grid_attach(grid, shuffle_button, 1,1,1,1);
@@ -205,7 +217,7 @@ static void init_mini_grid(GtkGrid* grid) {
 	gtk_grid_set_column_homogeneous(grid, true);
 }
 
-static void init_grid(GtkWindow* window) {
+static init_grid(GtkWindow* window) {
 	GtkGrid* grid;
 	GtkWidget* toggle_button;
 	GtkWidget* prev_button;

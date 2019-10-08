@@ -99,6 +99,26 @@ void mpd_play_song_pos_button(GtkButton* button, gpointer mpd_r) {
 	mpd_play_song_pos((struct mpd_pass*)mpd_r);
 }
 
+void mpd_toggle_repeat_button(GtkButton* button, gpointer mpd_r) {
+	struct mpd_connection* mpd = (struct mpd_connection*)mpd_r;
+	mpd_toggle_repeat(mpd);
+}
+
+bool mpd_get_repeat(struct mpd_connection* mpd) {
+	struct mpd_status* status = mpd_run_status(mpd);
+	bool r = mpd_status_get_repeat(status);
+	mpd_status_free(status);
+	return r;
+}
+
+void mpd_set_repeat(struct mpd_connection* mpd, bool m) {
+	mpd_run_repeat(mpd, m);
+}
+
+void mpd_toggle_repeat(struct mpd_connection* mpd) {
+	mpd_set_repeat(mpd, !mpd_get_repeat(mpd));
+}
+
 void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd) {
 
 	g_assert(mpd != NULL);
