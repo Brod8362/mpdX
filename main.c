@@ -217,7 +217,7 @@ static void init_mini_grid(GtkGrid* grid) {
 	gtk_grid_set_column_homogeneous(grid, true);
 }
 
-static init_grid(GtkWindow* window) {
+static void init_grid(GtkWindow* window) {
 	GtkGrid* grid;
 	GtkWidget* toggle_button;
 	GtkWidget* prev_button;
