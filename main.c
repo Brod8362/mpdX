@@ -185,6 +185,11 @@ static void init_playlist_controls(GtkGrid* grid) {
 	save_playlist = gtk_button_new_from_icon_name("document-save", GTK_ICON_SIZE_BUTTON);
 	load_playlist = gtk_button_new_from_icon_name("document-open", GTK_ICON_SIZE_BUTTON);
 
+	gtk_widget_set_tooltip_text(add_track, "Add Track");
+	gtk_widget_set_tooltip_text(clear, "Clear Playlist");
+	gtk_widget_set_tooltip_text(save_playlist, "Save as new Playlist");
+	gtk_widget_set_tooltip_text(load_playlist, "Load existing playlist");
+
 	gtk_grid_attach(grid, add_track, 0, 1, 1, 1);
 	gtk_grid_attach(grid, clear, 1, 1, 1, 1);
 	gtk_grid_attach(grid, save_playlist, 2, 1, 1, 1);
