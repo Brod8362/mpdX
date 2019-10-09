@@ -75,6 +75,9 @@ void mpd_toggle_random(struct mpd_connection* mpd);
 
 void mpd_toggle_random_button(GtkButton* button, gpointer mpd_r);
 
+void mpd_clear_queue(struct mpd_connection* mpd);
+
+void mpd_clear_queue_button(GtkButton* button, gpointer mpd_r);
 
 void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd);
 

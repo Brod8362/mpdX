@@ -190,6 +190,8 @@ static void init_playlist_controls(GtkGrid* grid) {
 	gtk_widget_set_tooltip_text(save_playlist, "Save as new Playlist");
 	gtk_widget_set_tooltip_text(load_playlist, "Load existing playlist");
 
+	g_signal_connect(clear, "clicked", G_CALLBACK(mpd_clear_queue_button), mpd);
+
 	gtk_grid_attach(grid, add_track, 0, 1, 1, 1);
 	gtk_grid_attach(grid, clear, 1, 1, 1, 1);
 	gtk_grid_attach(grid, save_playlist, 2, 1, 1, 1);
