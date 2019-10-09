@@ -119,6 +119,46 @@ void mpd_toggle_repeat(struct mpd_connection* mpd) {
 	mpd_set_repeat(mpd, !mpd_get_repeat(mpd));
 }
 
+bool mpd_get_single(struct mpd_connection* mpd) {
+	struct mpd_status* status = mpd_run_status(mpd);
+	bool r = mpd_status_get_single(status);
+	mpd_status_free(status);
+	return r;
+}
+
+void mpd_set_single(struct mpd_connection* mpd, bool m) {
+	mpd_run_single(mpd, m);
+}
+
+void mpd_toggle_single(struct mpd_connection* mpd) {
+	mpd_set_single(mpd, !mpd_get_single(mpd));
+}
+
+void mpd_toggle_single_button(GtkButton* button, gpointer mpd_r) {
+	struct mpd_connection* mpd = (struct mpd_connection*)mpd_r;
+	mpd_toggle_single(mpd);
+}
+
+bool mpd_get_random(struct mpd_connection* mpd) {
+	struct mpd_status* status = mpd_run_status(mpd);
+	bool r = mpd_status_get_random(status);
+	mpd_status_free(status);
+	return r;
+}
+
+void mpd_set_random(struct mpd_connection* mpd, bool m) {
+	mpd_run_random(mpd, m);
+}
+
+void mpd_toggle_random(struct mpd_connection* mpd) {
+	mpd_set_random(mpd, !mpd_get_random(mpd));
+}
+
+void mpd_toggle_random_button(GtkButton* button, gpointer mpd_r) {
+	struct mpd_connection* mpd = (struct mpd_connection*)mpd_r;
+	mpd_toggle_random(mpd);
+}
+
 void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd) {
 
 	g_assert(mpd != NULL);

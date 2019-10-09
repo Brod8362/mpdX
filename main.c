@@ -28,6 +28,8 @@ GtkAdjustment* volume_bar;
 GtkAdjustment* time_bar;
 
 GtkToggleButton* repeat_but;
+GtkToggleButton* single_but;
+GtkToggleButton* shuffle_but;
 
 const char* argp_program_version = "mpdX v0.0";
 const char* argp_program_bug_address = "brod8362@gmail.com";
@@ -88,10 +90,6 @@ void update_play_bar() {
 	mpd_status_free(status);
 }
 
-void update_repeat_button() {
-	gtk_toggle_button_set_active(repeat_but, mpd_get_repeat(mpd));
-}
-
 void update_track_info() {
 	struct mpd_song* song = mpd_run_current_song(mpd);
 	if (song == NULL) {
@@ -117,7 +115,6 @@ void update_track_info() {
 	}
 	mpd_song_free(song);
 	update_play_bar();
-	update_repeat_button();
 }
 
 
@@ -201,14 +198,24 @@ static void init_mini_grid(GtkGrid* grid) {
 	GtkWidget* shuffle_button;
 	GtkWidget* single_button;
 	repeat_button = gtk_toggle_button_new_with_label("REP");
-	shuffle_button = gtk_button_new_from_icon_name("media-playlist-shuffle", GTK_ICON_SIZE_BUTTON);
-	single_button = gtk_button_new_with_label("1");
+	shuffle_button = gtk_toggle_button_new_with_label("RAND");
+	single_button = gtk_toggle_button_new_with_label("1");
 
 	repeat_but = GTK_TOGGLE_BUTTON(repeat_button);
+	single_but = GTK_TOGGLE_BUTTON(single_button);
+	shuffle_but = GTK_TOGGLE_BUTTON(shuffle_button);
 
 	g_signal_connect(repeat_but, "clicked", G_CALLBACK(mpd_toggle_repeat_button), mpd);
+	g_signal_connect(shuffle_but, "clicked", G_CALLBACK(mpd_toggle_random_button), mpd);
+	g_signal_connect(single_but, "clicked", G_CALLBACK(mpd_toggle_single_button), mpd);
 
 	gtk_toggle_button_set_mode(repeat_but, false);
+	gtk_toggle_button_set_mode(single_but, false);
+	gtk_toggle_button_set_mode(shuffle_but, false);
+
+	mpd_set_repeat(mpd, false);
+	mpd_set_single(mpd, false);
+	mpd_set_random(mpd, false);
 
 	gtk_grid_attach(grid, repeat_button, 0,1,1,1);
 	gtk_grid_attach(grid, shuffle_button, 1,1,1,1);

@@ -59,6 +59,23 @@ void mpd_toggle_repeat(struct mpd_connection* mpd);
 
 void mpd_toggle_repeat_button(GtkButton* button, gpointer mpd_r);
 
+bool mpd_get_single(struct mpd_connection* mpd);
+
+void mpd_set_single(struct mpd_connection* mpd, bool m);
+
+void mpd_toggle_single(struct mpd_connection* mpd);
+
+void mpd_toggle_single_button(GtkButton* button, gpointer mpd_r);
+
+bool mpd_get_random(struct mpd_connection* mpd);
+
+void mpd_set_random(struct mpd_connection* mpd, bool m);
+
+void mpd_toggle_random(struct mpd_connection* mpd);
+
+void mpd_toggle_random_button(GtkButton* button, gpointer mpd_r);
+
+
 void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd);
 
 
