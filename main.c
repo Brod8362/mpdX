@@ -185,6 +185,33 @@ void clear_playlist() {
 	g_list_free(children);
 }
 
+static void save_playlist_dialog(GtkWindow* parent) {
+	GtkDialog* dialog;
+	GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
+	GtkTextBuffer* buf;
+	GtkWidget* view;
+	GtkWidget* label;
+	GtkGrid* grid;
+
+	GtkTextIter start, end;
+	dialog = GTK_DIALOG(gtk_dialog_new_with_buttons("Playlist name", parent, flags, "_OK", GTK_RESPONSE_NONE, NULL));
+	buf = gtk_text_buffer_new(NULL);
+	view = gtk_text_view_new_with_buffer(buf);
+	label = gtk_label_new("Playlist name:");
+	grid = GTK_GRID(gtk_grid_new());
+
+	gtk_grid_attach(grid, label, 0, 0, 1, 1);
+	gtk_grid_attach(grid, view, 0, 1, 1, 1);
+	gtk_widget_show_all(GTK_WIDGET(grid));
+	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(dialog)), GTK_WIDGET(grid));
+
+	g_signal_connect_swapped(dialog, "response", G_CALLBACK(gtk_widget_destroy), dialog);
+	gtk_dialog_run(dialog);
+
+	gtk_text_buffer_get_bounds(buf, &start, &end);
+	mpd_save_playlist(mpd, gtk_text_buffer_get_text(buf, &start, &end, false));
+}
+
 static void init_playlist_controls(GtkGrid* grid) {
 	GtkWidget* add_track;
 	GtkWidget* clear;
@@ -202,6 +229,7 @@ static void init_playlist_controls(GtkGrid* grid) {
 	gtk_widget_set_tooltip_text(load_playlist, "Load existing playlist");
 
 	g_signal_connect(clear, "clicked", G_CALLBACK(mpd_clear_queue_button), mpd);
+	g_signal_connect(save_playlist, "clicked", G_CALLBACK(save_playlist_dialog), gtk_widget_get_parent_window(GTK_WIDGET(grid)));
 
 	gtk_grid_attach(grid, add_track, 0, 1, 1, 1);
 	gtk_grid_attach(grid, clear, 1, 1, 1, 1);

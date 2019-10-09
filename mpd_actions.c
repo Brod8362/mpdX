@@ -170,6 +170,15 @@ void mpd_clear_queue_button(GtkButton* button, gpointer mpd_r) {
 	clear_playlist();
 }
 
+void mpd_save_playlist(struct mpd_connection* mpd, const char* name) {
+	mpd_run_save(mpd, name);
+}
+
+void mpd_save_playlist_button(GtkButton* button, gpointer mpd_r) {
+	struct playlist_save* pl = (struct playlist_save*)mpd_r;
+	mpd_run_save(pl->mpd, pl->name);
+}
+
 void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd) {
 
 	g_assert(mpd != NULL);
