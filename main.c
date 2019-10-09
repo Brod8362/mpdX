@@ -31,6 +31,8 @@ GtkToggleButton* repeat_but;
 GtkToggleButton* single_but;
 GtkToggleButton* shuffle_but;
 
+GtkListBox* listbox;
+
 const char* argp_program_version = "mpdX v0.0";
 const char* argp_program_bug_address = "brod8362@gmail.com";
 static char doc[] = "mpd controller written in C for the X window system";
@@ -142,7 +144,7 @@ static void destroy_button_group(struct queue_button_group* group) {
 	free(group);
 }
 
-static void fill_playlist(GtkWidget* list_box) {
+void fill_playlist() {
 	struct mpd_status* status = mpd_run_status(mpd);
 	int len = mpd_status_get_queue_length(status);
 	struct mpd_song* song;
@@ -168,10 +170,19 @@ static void fill_playlist(GtkWidget* list_box) {
 		group->pass=henlo_score;
 		g_signal_connect(song_button, "clicked", G_CALLBACK(mpd_play_song_id_button), henlo_score);
 		g_signal_connect(remove_button, "clicked", G_CALLBACK(destroy_button_group), group);
-		gtk_list_box_insert(GTK_LIST_BOX(list_box), grid, 0);
+		gtk_list_box_insert(GTK_LIST_BOX(listbox), grid, 0);
 		mpd_song_free(song);
 	}
 	mpd_status_free(status);
+}
+
+void clear_playlist() {
+	GList *children, *iter; 
+	children = gtk_container_get_children(GTK_CONTAINER(listbox));
+	for (iter=children; iter != NULL; iter = g_list_next(iter)) {
+		gtk_widget_destroy(GTK_WIDGET(iter->data));
+	}
+	g_list_free(children);
 }
 
 static void init_playlist_controls(GtkGrid* grid) {
@@ -256,7 +267,8 @@ static void init_grid(GtkWindow* window) {
 
 	GtkWidget* scrolled_list = gtk_scrolled_window_new(gtk_adjustment_new(0, 0, 100, 0, 0, 0), gtk_adjustment_new(0, 0, 100, 0, 0, 0));
 	list_box = gtk_list_box_new();
-	fill_playlist(list_box);
+	listbox = GTK_LIST_BOX(list_box);
+	fill_playlist();
 	gtk_container_add(GTK_CONTAINER(scrolled_list), list_box);
 
 	grid = GTK_GRID(gtk_grid_new());

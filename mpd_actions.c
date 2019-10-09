@@ -161,11 +161,13 @@ void mpd_toggle_random_button(GtkButton* button, gpointer mpd_r) {
 
 void mpd_clear_queue(struct mpd_connection* mpd) {
 	mpd_run_clear(mpd);
+	clear_playlist();
 }
 
 void mpd_clear_queue_button(GtkButton* button, gpointer mpd_r) {
 	struct mpd_connection* mpd = (struct mpd_connection*)mpd_r;
 	mpd_clear_queue(mpd);
+	clear_playlist();
 }
 
 void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd) {

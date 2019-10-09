@@ -28,6 +28,10 @@ void play_pause_button_click();
 
 void set_volume_bar_level();
 
+void fill_playlist();
+
+void clear_playlist();
+
 int handle_mpd_error();
 
 #endif
