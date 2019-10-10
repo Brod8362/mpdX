@@ -315,6 +315,9 @@ static void init_grid(GtkWindow* window) {
 	GtkWidget* time_elapsed_bar;
 	GtkGrid* mini_control_grid;
 	GtkGrid* playlist_control_grid;
+	GtkGrid* info_grid;
+	GtkWidget* frame;
+	
 
 	textview = gtk_label_new("<DEFAULT>"); //load view w/ buffer
 	artistview = gtk_label_new("<DEFAULT>");
@@ -338,7 +341,16 @@ static void init_grid(GtkWindow* window) {
 	playlist_control_grid = GTK_GRID(gtk_grid_new());
 	init_playlist_controls(playlist_control_grid);
 
-	
+	frame = gtk_frame_new("Song Info");
+	info_grid = GTK_GRID(gtk_grid_new());
+	gtk_widget_set_vexpand(GTK_WIDGET(info_grid), true);
+	gtk_widget_set_hexpand(GTK_WIDGET(info_grid), true);
+	gtk_grid_set_column_homogeneous(info_grid, true);
+	gtk_grid_set_row_homogeneous(info_grid, true);
+	gtk_grid_attach(info_grid, textview, 0, 0, 1, 1);
+	gtk_grid_attach(info_grid, artistview, 0, 1, 1, 1);
+	gtk_container_add(GTK_CONTAINER(frame), GTK_WIDGET(info_grid));
+
 	toggle_button = gtk_button_new_from_icon_name("media-playback-start", GTK_ICON_SIZE_BUTTON);
 	prev_button = gtk_button_new_from_icon_name("media-skip-backward", GTK_ICON_SIZE_BUTTON);
 	next_button = gtk_button_new_from_icon_name("media-skip-forward", GTK_ICON_SIZE_BUTTON);
@@ -370,8 +382,7 @@ static void init_grid(GtkWindow* window) {
 	gtk_grid_set_row_homogeneous(grid, true);
 	gtk_grid_set_column_homogeneous(grid, true);
 
-	gtk_grid_attach(grid, textview, 0, 1, 3, 1);
-	gtk_grid_attach(grid, artistview, 0, 2, 3, 1);
+	gtk_grid_attach(grid, frame, 0, 1, 3, 2);
 	gtk_grid_attach(grid, gtk_label_new("Queue"), 3, 0, 2, 1);
 	gtk_grid_attach(grid, scrolled_list, 3, 1, 2, 2);
 	gtk_grid_attach(grid, vol_icon, 0, 3, 1, 1);
