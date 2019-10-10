@@ -138,7 +138,8 @@ void play_pause_button_click() {
 	update_track_info();
 }
 
-static void destroy_button_group(struct queue_button_group* group) {
+static void destroy_button_group(GtkButton* button, gpointer ptr) {
+	struct queue_button_group* group = (struct queue_button_group*)ptr;
 	mpd_unqueue_song_id(group->pass);
 	gtk_grid_remove_row(GTK_GRID(group->container), 0);
 	gtk_widget_destroy(group->container);
