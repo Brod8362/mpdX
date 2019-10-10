@@ -188,7 +188,7 @@ void clear_playlist() {
 	g_list_free(children);
 }
 
-static void save_playlist_dialog(GtkWindow* parent) {
+static void save_playlist_dialog(GtkButton* button, GtkWindow* parent) {
 	GtkDialog* dialog;
 	GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
 	GtkTextBuffer* buf;
@@ -215,7 +215,7 @@ static void save_playlist_dialog(GtkWindow* parent) {
 	mpd_save_playlist(mpd, gtk_text_buffer_get_text(buf, &start, &end, false));
 }
 
-static void load_playlist_dialog(GtkWindow* parent) {
+static void load_playlist_dialog(GtkButton* button, GtkWindow* parent) {
 	GtkDialog* dialog;
 	GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
 	GtkWidget* list_box;
