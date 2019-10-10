@@ -384,7 +384,6 @@ static void init_grid(GtkWindow* window) {
 	}
 
 	//gtk_grid_set_row_spacing(grid, 3);
-	gtk_grid_set_row_homogeneous(grid, true);
 	gtk_grid_set_column_homogeneous(grid, true);
 
 	gtk_grid_attach(grid, frame, 0, 1, 3, 2);
