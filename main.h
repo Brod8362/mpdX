@@ -16,11 +16,6 @@ struct queue_button_group {
     struct mpd_pass* pass;
 };
 
-struct playlist_save {
-    struct mpd_connection* mpd;
-    const char* name;
-};
-
 GtkButton* play_pause_button;
 
 void display_non_fatal_error(const char* message);
