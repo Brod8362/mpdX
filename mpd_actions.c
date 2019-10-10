@@ -174,7 +174,11 @@ void mpd_save_playlist(struct mpd_connection* mpd, const char* name) {
 	mpd_run_save(mpd, name);
 }
 
-
+void mpd_load_playlist(struct mpd_connection* mpd, const char* name) {
+	mpd_run_load(mpd, name);
+	clear_playlist();
+	fill_playlist();
+}
 
 void init_mpd_actions(GtkApplication* app, struct mpd_connection* mpd) {
 

@@ -85,4 +85,6 @@ void mpd_save_playlist(struct mpd_connection* mpd, const char* name);
 
 void mpd_save_playlist_button(GtkButton* button, gpointer mpd_r);
 
+void mpd_load_playlist(struct mpd_connection* mpd, const char* name);
+
 #endif

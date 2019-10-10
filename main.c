@@ -238,7 +238,7 @@ static void load_playlist_dialog(GtkWindow* parent) {
 
 	GtkListBoxRow* selected = gtk_list_box_get_selected_row(GTK_LIST_BOX(list_box));
 	GtkWidget* lbl = gtk_bin_get_child(GTK_BIN(selected));
-	mpd_run_load(mpd, gtk_label_get_text(GTK_LABEL(lbl)));
+	mpd_load_playlist(mpd, gtk_label_get_text(GTK_LABEL(lbl)));
 	gtk_widget_destroy(GTK_WIDGET(dialog));
 }
 
