@@ -34,6 +34,10 @@ static void populate_list_box(GtkListBox* listbox, struct mpd_connection* mpd, c
         if (s==NULL) break;
         GtkGrid* grid = GTK_GRID(gtk_grid_new());
         GtkButton* button = GTK_BUTTON(gtk_button_new_from_icon_name("list-add", GTK_ICON_SIZE_BUTTON));
+        const char* title = mpd_song_get_tag(s, MPD_TAG_TITLE, 0);
+        if (title == NULL || strcmp(title, "")==0) {
+            title = mpd_song_get_uri(s);
+        }
         GtkWidget* label = gtk_label_new(mpd_song_get_tag(s, MPD_TAG_TITLE, 0));
         //gtk_widget_set_hexpand(label, true);
         gtk_grid_attach(grid, label, 1, 0, 1, 1);
@@ -81,14 +85,10 @@ void queue_song_with_song_dialog(GtkWindow* parent, struct mpd_connection* mpd) 
     cs->listbox=listbox;
     cs->mpd=mpd;
 
-    g_signal_connect(dialog, "response", G_CALLBACK(NULL), NULL); // handle user response
+    g_signal_connect(dialog, "response", G_CALLBACK(gtk_widget_destroy), NULL); // handle user response
     g_signal_connect(search, "search-changed", G_CALLBACK(search_changed), cs);
 
     gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(dialog)), GTK_WIDGET(grid));
     gtk_widget_show_all(GTK_WIDGET(grid));
     gtk_dialog_run(dialog);
-
-    GtkListBoxRow* selected = gtk_list_box_get_selected_row(listbox);
-	GtkWidget* child = gtk_bin_get_child(GTK_BIN(selected));
-	gtk_widget_destroy(GTK_WIDGET(dialog));
 }
