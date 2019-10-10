@@ -220,7 +220,7 @@ static void load_playlist_dialog(GtkButton* button, GtkWindow* parent) {
 	GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
 	GtkWidget* list_box;
 
-	dialog = GTK_DIALOG(gtk_dialog_new_with_buttons("Load playlist", parent, flags, "_OK", GTK_RESPONSE_NONE, NULL));
+	dialog = GTK_DIALOG(gtk_dialog_new_with_buttons("Load playlist", parent, flags, "_Cancel", GTK_RESPONSE_NONE, "_OK", GTK_RESPONSE_OK, NULL));
 	list_box = gtk_list_box_new();
 
 	mpd_command_list_begin(mpd, false);
@@ -236,7 +236,9 @@ static void load_playlist_dialog(GtkButton* button, GtkWindow* parent) {
 	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(dialog)), list_box);
 	gtk_widget_show_all(list_box);
 	g_signal_connect(dialog, "response", G_CALLBACK(NULL), NULL);
-	gtk_dialog_run(dialog);
+	int resp = gtk_dialog_run(dialog);
+
+	if (resp != GTK_RESPONSE_OK) return;
 
 	GtkListBoxRow* selected = gtk_list_box_get_selected_row(GTK_LIST_BOX(list_box));
 	GtkWidget* lbl = gtk_bin_get_child(GTK_BIN(selected));
