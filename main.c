@@ -12,6 +12,7 @@
 
 #include "mpd_actions.h"
 #include "actions.h"
+#include "song_search_dialog.h"
 
 char* mpd_conn_dest = "localhost";
 int mpd_port = 6600;
@@ -243,6 +244,10 @@ static void load_playlist_dialog(GtkWindow* parent) {
 	gtk_widget_destroy(GTK_WIDGET(dialog));
 }
 
+static void add_track_dialog(GtkButton* button, GtkWindow* parent) {
+	queue_song_with_song_dialog(parent, mpd);
+}
+
 static void init_playlist_controls(GtkGrid* grid) {
 	GtkWidget* add_track;
 	GtkWidget* clear;
@@ -262,6 +267,7 @@ static void init_playlist_controls(GtkGrid* grid) {
 	g_signal_connect(clear, "clicked", G_CALLBACK(mpd_clear_queue_button), mpd);
 	g_signal_connect(save_playlist, "clicked", G_CALLBACK(save_playlist_dialog), gtk_widget_get_parent_window(GTK_WIDGET(grid)));
 	g_signal_connect(load_playlist, "clicked", G_CALLBACK(load_playlist_dialog), gtk_widget_get_parent_window(GTK_WIDGET(grid)));
+	g_signal_connect(add_track, "clicked", G_CALLBACK(add_track_dialog), gtk_widget_get_parent_window(GTK_WIDGET(grid)));
 
 	gtk_grid_attach(grid, add_track, 0, 1, 1, 1);
 	gtk_grid_attach(grid, clear, 1, 1, 1, 1);
