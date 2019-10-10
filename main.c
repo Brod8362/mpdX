@@ -156,6 +156,9 @@ void fill_playlist() {
 		g_assert(song != NULL);
 		unsigned int id = mpd_song_get_id(song);
 		const char* title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
+		if (title == NULL || strcmp(title, "") == 0) {
+			title = mpd_song_get_uri(song);
+		}
 		GtkWidget* grid = gtk_grid_new();
 		GtkWidget* song_button = gtk_button_new_with_label(title);
 		GtkWidget* remove_button = gtk_button_new_from_icon_name("list-remove", GTK_ICON_SIZE_BUTTON);
