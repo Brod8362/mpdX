@@ -236,12 +236,19 @@ static void load_playlist_dialog(GtkButton* button, GtkWindow* parent) {
 		if (pl == NULL) break;
 		gtk_list_box_insert(GTK_LIST_BOX(list_box), gtk_label_new(mpd_playlist_get_path(pl)), i++);
 	}
+	if (i == 0) {
+		display_non_fatal_error("No playlists available.");
+		return;
+	}
 	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(dialog)), list_box);
 	gtk_widget_show_all(list_box);
 	g_signal_connect(dialog, "response", G_CALLBACK(NULL), NULL);
 	int resp = gtk_dialog_run(dialog);
 
-	if (resp != GTK_RESPONSE_OK) return;
+	if (resp != GTK_RESPONSE_OK) {
+		gtk_widget_destroy(GTK_WIDGET(dialog));
+		return;
+	}
 
 	GtkListBoxRow* selected = gtk_list_box_get_selected_row(GTK_LIST_BOX(list_box));
 	GtkWidget* lbl = gtk_bin_get_child(GTK_BIN(selected));
