@@ -97,7 +97,7 @@ void update_play_bar() {
 void update_track_info() {
 	struct mpd_song* song = mpd_run_current_song(mpd);
 	if (song == NULL) {
-		puts("song is null in update_track_info()");
+		display_non_fatal_error("song is null in update_track_info()");
 		return;
 	}
 	const char* title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
