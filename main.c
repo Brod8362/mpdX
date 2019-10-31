@@ -58,8 +58,11 @@ void display_non_fatal_error(const char* message) {
 	GtkWidget* dialog;
 	GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
 	dialog = gtk_message_dialog_new(main_window, flags, GTK_MESSAGE_WARNING, GTK_BUTTONS_CLOSE, "A non-fatal error has occured. Reason:\n%s", message);
-	gtk_dialog_run(GTK_DIALOG(dialog));
-	g_signal_connect_swapped(dialog, "response", G_CALLBACK(gtk_widget_destroy), dialog);
+	int resp = gtk_dialog_run(GTK_DIALOG(dialog));
+	
+	if (resp == GTK_RESPONSE_CLOSE) {
+		gtk_widget_destroy(dialog);
+	}
 }
 
 void display_fatal_error(const char* message) {
