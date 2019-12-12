@@ -104,6 +104,7 @@ int play_bar_thread(void* thr_data) {
 	while (true) {
 		sleep(1);
 		update_play_bar();
+		play_pause_button_click();
 	}
 }
 
