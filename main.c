@@ -8,6 +8,7 @@
 #include <mpd/status.h>
 #include <mpd/entity.h>
 #include <mpd/socket.h>
+#include <threads.h>
 #include <mpd/playlist.h>
 
 #include "mpd_actions.h"
@@ -85,7 +86,9 @@ static void vol_change() {
 
 void update_play_bar() {
 	struct mpd_song* song = mpd_run_current_song(mpd);
+	if (song == NULL) return;
 	struct mpd_status* status = mpd_run_status(mpd);
+	if (status == NULL) return;
 	
 	int length = mpd_song_get_duration(song);
 	int elapsed = mpd_status_get_elapsed_time(status);
@@ -95,6 +98,13 @@ void update_play_bar() {
 
 	mpd_song_free(song);
 	mpd_status_free(status);
+}
+
+int play_bar_thread(void* thr_data) {
+	while (true) {
+		sleep(1);
+		update_play_bar();
+	}
 }
 
 void update_track_info() {
@@ -482,6 +492,9 @@ static void activate(GtkApplication* app, gpointer data) {
 	main_window = GTK_WINDOW(window);
 	init_grid(GTK_WINDOW(window));
 	gtk_widget_show_all(window);
+
+	thrd_t thr;
+	thrd_create(&thr, play_bar_thread, NULL);
 }
 
 static error_t parse_opt(int key, char* arg, struct argp_state *state) {
