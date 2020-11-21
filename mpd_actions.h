@@ -5,15 +5,15 @@
 #include <mpd/client.h>
 #include "main.h"
 
-GSimpleAction* mpd_play_action;
-GSimpleAction* mpd_pause_action;
-GSimpleAction* mpd_playback_toggle;
-GSimpleAction* mpd_stop_action;
-GSimpleAction* mpd_next_action;
-GSimpleAction* mpd_prev_action;
-GSimpleAction* mpd_vol_up_action;
-GSimpleAction* mpd_vol_down_action;
-GSimpleAction* mpd_mute_action;
+extern GSimpleAction* mpd_play_action;
+extern GSimpleAction* mpd_pause_action;
+extern GSimpleAction* mpd_playback_toggle;
+extern GSimpleAction* mpd_stop_action;
+extern GSimpleAction* mpd_next_action;
+extern GSimpleAction* mpd_prev_action;
+extern GSimpleAction* mpd_vol_up_action;
+extern GSimpleAction* mpd_vol_down_action;
+extern GSimpleAction* mpd_mute_action;
 
 void mpd_play(GSimpleAction* action, GVariant* parameter, gpointer mpd_r);
 
