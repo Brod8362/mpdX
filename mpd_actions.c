@@ -6,6 +6,16 @@
 #include "mpd_actions.h"
 #include "main.h"
 
+GSimpleAction* mpd_play_action;
+GSimpleAction* mpd_pause_action;
+GSimpleAction* mpd_playback_toggle;
+GSimpleAction* mpd_stop_action;
+GSimpleAction* mpd_next_action;
+GSimpleAction* mpd_prev_action;
+GSimpleAction* mpd_vol_up_action;
+GSimpleAction* mpd_vol_down_action;
+GSimpleAction* mpd_mute_action;
+
 void mpd_play(GSimpleAction* action, GVariant* parameter, gpointer mpd_r) {
 	struct mpd_connection* mpd = (struct mpd_connection*)mpd_r;
 	mpd_run_pause(mpd, false);
